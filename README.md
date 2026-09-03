@@ -39,6 +39,22 @@ consequences this repository leans on throughout:
 - **It is defined without reference to a grid.** The map acts on coefficients, so it
   transfers to any resolution on which the singular vectors can be evaluated.
 
+
+## Fresh simulation run (this checkout)
+
+`python -m specinv.experiments.run_all --results-dir results --skip-ablations` on CPU — **all 11 criteria PASS**:
+
+| Criterion | Measured |
+|---|---|
+| Rate on paper δ-grid | **0.4892** (theory 0.50) |
+| Rate asymptotic | **0.4992** |
+| Zero-shot N=2048 error | **0.2415** (paper ~0.229) |
+| Zero-shot drift (fixed aperture) | **~0** |
+| Beat Oracle Tikhonov | **yes** (worst margin ~4.3%) |
+| Interpretable / sharp filter checks | **all PASS** |
+
+Figures: `results/figures/fig1_convergence.png`, `fig2_learned_filter.png`, `fig3_zero_shot.png`. Full gate: `results/summary.json`.
+
 ## Headline results
 
 Measured on the §5.1 suite (\(\sigma_n = n^{-p}\), \(p=1.5\); sources with

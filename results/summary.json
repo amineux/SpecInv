@@ -1,0 +1,99 @@
+{
+  "paper": "arXiv:2603.20602",
+  "paper_title": "Interpretable Operator Learning for Inverse Problems via Adaptive Spectral Filtering: Convergence and Discretization Invariance",
+  "paper_reference_values": {
+    "scnet_rate_slope": 0.5,
+    "oracle_tikhonov_rate_slope": 0.42,
+    "theoretical_rate_s_p_1p5": 0.5,
+    "zero_shot_error_n256": 0.2415,
+    "zero_shot_error_n2048": 0.2292,
+    "train_resolution": 256,
+    "test_resolutions": [
+      512,
+      1024,
+      2048
+    ],
+    "n_train": 2000,
+    "n_test": 500
+  },
+  "criteria": [
+    {
+      "name": "convergence_order_paper_grid",
+      "description": "Fitted order of SC-Net on the paper's noise grid is within 0.05 of s/(s+p)=0.5",
+      "measured": 0.48918702751683774,
+      "target": "|slope - 0.50| <= 0.05",
+      "passed": true
+    },
+    {
+      "name": "convergence_order_asymptotic",
+      "description": "Fitted order on the extended grid (delta down to 1e-8) is within 0.02 of 0.5",
+      "measured": 0.4992434503444463,
+      "target": "|slope - 0.50| <= 0.02",
+      "passed": true
+    },
+    {
+      "name": "zero_shot_error_magnitude",
+      "description": "Zero-shot error at N=2048 matches the paper's 0.2292 within 15%",
+      "measured": 0.2414938251223698,
+      "target": "|e - 0.2292| / 0.2292 <= 0.15",
+      "passed": true
+    },
+    {
+      "name": "zero_shot_stability",
+      "description": "Error drifts by <5% from the N=256 training grid to N=2048",
+      "measured": 5.940913970294961e-07,
+      "target": "drift <= 0.05",
+      "passed": true
+    },
+    {
+      "name": "zero_shot_stability_full_aperture",
+      "description": "With the aperture widened to all 2048 modes, the error still drifts by <15%",
+      "measured": 0.05656210193957816,
+      "target": "drift <= 0.15",
+      "passed": true
+    },
+    {
+      "name": "beats_oracle_tikhonov",
+      "description": "SC-Net beats Oracle Tikhonov at every noise level on the suite",
+      "measured": true,
+      "target": "all(scnet < oracle_tikhonov)",
+      "passed": true
+    },
+    {
+      "name": "beats_oracle_tikhonov_margin",
+      "description": "Worst-case relative margin over Oracle Tikhonov across noise levels",
+      "measured": 0.043412651065460654,
+      "target": "margin > 0",
+      "passed": true
+    },
+    {
+      "name": "filter_is_interpretable",
+      "description": "Learned filter is a bounded damping profile in [0,1] that can be tabulated",
+      "measured": true,
+      "target": "True",
+      "passed": true
+    },
+    {
+      "name": "filter_preserves_low_modes",
+      "description": "Learned damping exceeds 0.9 on the leading mode at every noise level",
+      "measured": true,
+      "target": "True",
+      "passed": true
+    },
+    {
+      "name": "filter_suppresses_high_modes",
+      "description": "Learned damping is below 0.05 at mode 32 at every noise level",
+      "measured": true,
+      "target": "True",
+      "passed": true
+    },
+    {
+      "name": "filter_sharper_than_tikhonov",
+      "description": "Learned transition band is narrower than Tikhonov's at every noise level",
+      "measured": true,
+      "target": "True",
+      "passed": true
+    }
+  ],
+  "all_passed": true
+}

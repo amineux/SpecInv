@@ -1,0 +1,141 @@
+==============================================================================
+SpecInv: reproducing arXiv:2603.20602 (SC-Net)
+==============================================================================
+
+[paper_grid] noise_model=critical resolution=256
+    signal/noise crossover at delta=0.001 is mode 10; noise band (30, 60)
+    epoch    1/300  loss=1.27136  val_rel_l2=0.38538
+    epoch   50/300  loss=-5.20071  val_rel_l2=0.09880
+    epoch  100/300  loss=-5.22779  val_rel_l2=0.09907
+    epoch  150/300  loss=-5.17719  val_rel_l2=0.09851
+    epoch  200/300  loss=-5.26674  val_rel_l2=0.09863
+    epoch  250/300  loss=-5.19917  val_rel_l2=0.09848
+    epoch  300/300  loss=-5.21356  val_rel_l2=0.09833
+    delta=0.1       scnet=0.2489  oracle_tikhonov=0.2602  oracle_tsvd=0.2315  tikhonov_discrepancy=0.3072  prior_wiener=0.2482  oracle_spectral_bound=0.1473
+    delta=0.05      scnet=0.1786  oracle_tikhonov=0.1891  oracle_tsvd=0.1655  tikhonov_discrepancy=0.2168  prior_wiener=0.1782  oracle_spectral_bound=0.1053
+    delta=0.01      scnet=0.0815  oracle_tikhonov=0.0878  oracle_tsvd=0.0774  tikhonov_discrepancy=0.0974  prior_wiener=0.0809  oracle_spectral_bound=0.0487
+    delta=0.005     scnet=0.0576  oracle_tikhonov=0.0627  oracle_tsvd=0.0560  tikhonov_discrepancy=0.0690  prior_wiener=0.0571  oracle_spectral_bound=0.0350
+    delta=0.001     scnet=0.0262  oracle_tikhonov=0.0287  oracle_tsvd=0.0264  tikhonov_discrepancy=0.0308  prior_wiener=0.0259  oracle_spectral_bound=0.0162
+    fitted slopes: scnet=0.4892  oracle_tikhonov=0.4793  oracle_tsvd=0.4713  tikhonov_discrepancy=0.4992  prior_wiener=0.4917  oracle_spectral_bound=0.4790
+
+[extended_grid] noise_model=critical resolution=2048
+    signal/noise crossover at delta=1e-08 is mode 464; noise band (1393, 2048)
+    epoch    1/300  loss=-2.73027  val_rel_l2=0.08816
+    epoch   50/300  loss=-11.99089  val_rel_l2=0.01280
+    epoch  100/300  loss=-11.94801  val_rel_l2=0.01279
+    epoch  150/300  loss=-11.97581  val_rel_l2=0.01279
+    epoch  200/300  loss=-11.99925  val_rel_l2=0.01281
+    epoch  250/300  loss=-11.98741  val_rel_l2=0.01281
+    epoch  300/300  loss=-11.97821  val_rel_l2=0.01279
+    delta=0.01      scnet=0.0809  oracle_tikhonov=0.0878  oracle_tsvd=0.0774  tikhonov_discrepancy=0.0987  prior_wiener=0.0809  oracle_spectral_bound=0.0487
+    delta=0.003     scnet=0.0444  oracle_tikhonov=0.0490  oracle_tsvd=0.0441  tikhonov_discrepancy=0.0539  prior_wiener=0.0443  oracle_spectral_bound=0.0274
+    delta=0.001     scnet=0.0259  oracle_tikhonov=0.0287  oracle_tsvd=0.0264  tikhonov_discrepancy=0.0310  prior_wiener=0.0259  oracle_spectral_bound=0.0162
+    delta=0.0003    scnet=0.0142  oracle_tikhonov=0.0158  oracle_tsvd=0.0147  tikhonov_discrepancy=0.0169  prior_wiener=0.0142  oracle_spectral_bound=0.0088
+    delta=0.0001    scnet=0.0082  oracle_tikhonov=0.0092  oracle_tsvd=0.0086  tikhonov_discrepancy=0.0097  prior_wiener=0.0082  oracle_spectral_bound=0.0051
+    delta=3e-05     scnet=0.0045  oracle_tikhonov=0.0051  oracle_tsvd=0.0048  tikhonov_discrepancy=0.0053  prior_wiener=0.0045  oracle_spectral_bound=0.0029
+    delta=1e-05     scnet=0.0026  oracle_tikhonov=0.0029  oracle_tsvd=0.0028  tikhonov_discrepancy=0.0030  prior_wiener=0.0026  oracle_spectral_bound=0.0017
+    delta=3e-06     scnet=0.0014  oracle_tikhonov=0.0016  oracle_tsvd=0.0015  tikhonov_discrepancy=0.0017  prior_wiener=0.0014  oracle_spectral_bound=0.0009
+    delta=1e-06     scnet=0.0008  oracle_tikhonov=0.0009  oracle_tsvd=0.0009  tikhonov_discrepancy=0.0010  prior_wiener=0.0008  oracle_spectral_bound=0.0005
+    delta=3e-07     scnet=0.0005  oracle_tikhonov=0.0005  oracle_tsvd=0.0005  tikhonov_discrepancy=0.0005  prior_wiener=0.0005  oracle_spectral_bound=0.0003
+    delta=1e-07     scnet=0.0003  oracle_tikhonov=0.0003  oracle_tsvd=0.0003  tikhonov_discrepancy=0.0003  prior_wiener=0.0003  oracle_spectral_bound=0.0002
+    delta=3e-08     scnet=0.0001  oracle_tikhonov=0.0002  oracle_tsvd=0.0002  tikhonov_discrepancy=0.0002  prior_wiener=0.0001  oracle_spectral_bound=0.0001
+    delta=1e-08     scnet=0.0001  oracle_tikhonov=0.0001  oracle_tsvd=0.0001  tikhonov_discrepancy=0.0001  prior_wiener=0.0001  oracle_spectral_bound=0.0001
+    fitted slopes: scnet=0.4992  oracle_tikhonov=0.4972  oracle_tsvd=0.4893  tikhonov_discrepancy=0.5038  prior_wiener=0.4992  oracle_spectral_bound=0.4961
+
+[white_noise] noise_model=white_energy resolution=256
+    signal/noise crossover at delta=0.001 is mode 7; noise band (22, 44)
+    epoch    1/300  loss=0.89134  val_rel_l2=0.27698
+    epoch   50/300  loss=-6.91757  val_rel_l2=0.04080
+    epoch  100/300  loss=-6.93587  val_rel_l2=0.04089
+    epoch  150/300  loss=-6.88001  val_rel_l2=0.04064
+    epoch  200/300  loss=-6.97165  val_rel_l2=0.04067
+    epoch  250/300  loss=-6.92359  val_rel_l2=0.04058
+    epoch  300/300  loss=-6.91752  val_rel_l2=0.04059
+    delta=0.1       scnet=0.0912  oracle_tikhonov=0.1089  oracle_tsvd=0.0858  tikhonov_discrepancy=0.1429  prior_wiener=0.0907  oracle_spectral_bound=0.0538
+    delta=0.05      scnet=0.0677  oracle_tikhonov=0.0817  oracle_tsvd=0.0647  tikhonov_discrepancy=0.0999  prior_wiener=0.0671  oracle_spectral_bound=0.0406
+    delta=0.01      scnet=0.0346  oracle_tikhonov=0.0418  oracle_tsvd=0.0340  tikhonov_discrepancy=0.0454  prior_wiener=0.0342  oracle_spectral_bound=0.0213
+    delta=0.005     scnet=0.0259  oracle_tikhonov=0.0313  oracle_tsvd=0.0258  tikhonov_discrepancy=0.0329  prior_wiener=0.0256  oracle_spectral_bound=0.0159
+    delta=0.001     scnet=0.0131  oracle_tikhonov=0.0158  oracle_tsvd=0.0132  tikhonov_discrepancy=0.0161  prior_wiener=0.0128  oracle_spectral_bound=0.0079
+    fitted slopes: scnet=0.4201  oracle_tikhonov=0.4184  oracle_tsvd=0.4056  tikhonov_discrepancy=0.4752  prior_wiener=0.4245  oracle_spectral_bound=0.4142
+  wrote results/convergence.json
+  wrote results/convergence.csv
+  wrote results/figures/fig1_convergence.png
+  wrote results/figures/fig1b_local_slope.png
+
+SC-Net order on the paper's grid: 0.4892 (paper 0.50, theory 0.50)
+SC-Net order on the extended grid:  0.4992
+
+[zero-shot] training SC-Net at N=256
+    epoch    1/300  loss=1.27143  val_rel_l2=0.38634
+    epoch   50/300  loss=-5.20069  val_rel_l2=0.09890
+    epoch  100/300  loss=-5.22683  val_rel_l2=0.09886
+    epoch  150/300  loss=-5.17655  val_rel_l2=0.09845
+    epoch  200/300  loss=-5.26726  val_rel_l2=0.09873
+    epoch  250/300  loss=-5.19812  val_rel_l2=0.09855
+    epoch  300/300  loss=-5.21419  val_rel_l2=0.09841
+
+[zero-shot] training spatial CNN control at N=256
+    [cnn] epoch    1/300  loss=0.42798  val_rel_l2=0.38980
+    [cnn] epoch   50/300  loss=0.03313  val_rel_l2=0.15986
+    [cnn] epoch  100/300  loss=0.02921  val_rel_l2=0.15100
+    [cnn] epoch  150/300  loss=0.02800  val_rel_l2=0.15139
+    [cnn] epoch  200/300  loss=0.02615  val_rel_l2=0.14203
+    [cnn] epoch  250/300  loss=0.02611  val_rel_l2=0.13900
+    [cnn] epoch  300/300  loss=0.02541  val_rel_l2=0.13755
+
+[zero-shot] evaluating at delta=0.1
+    N=256   scnet=0.2451  oracle_tikhonov=0.2609  oracle_tsvd=0.2217  tikhonov_discrepancy=0.3064  prior_wiener=0.2437  oracle_spectral_bound=0.1479  scnet_full_aperture=0.2451  spatial_cnn=0.3166
+    N=512   scnet=0.2451  oracle_tikhonov=0.2609  oracle_tsvd=0.2217  tikhonov_discrepancy=0.3096  prior_wiener=0.2437  oracle_spectral_bound=0.1479  scnet_full_aperture=0.2453  spatial_cnn=0.4297
+    N=1024  scnet=0.2451  oracle_tikhonov=0.2609  oracle_tsvd=0.2217  tikhonov_discrepancy=0.3128  prior_wiener=0.2437  oracle_spectral_bound=0.1479  scnet_full_aperture=0.2469  spatial_cnn=0.4734
+    N=2048  scnet=0.2451  oracle_tikhonov=0.2609  oracle_tsvd=0.2217  tikhonov_discrepancy=0.3159  prior_wiener=0.2437  oracle_spectral_bound=0.1479  scnet_full_aperture=0.2589  spatial_cnn=0.4893
+
+[zero-shot] evaluating at delta=0.0971 (matched to the paper's N=256 error of 0.2415)
+    N=256   scnet=0.2415  oracle_tikhonov=0.2573  oracle_tsvd=0.2186  tikhonov_discrepancy=0.3015  prior_wiener=0.2401  oracle_spectral_bound=0.1457  scnet_full_aperture=0.2415  spatial_cnn=0.3108
+    N=512   scnet=0.2415  oracle_tikhonov=0.2573  oracle_tsvd=0.2186  tikhonov_discrepancy=0.3046  prior_wiener=0.2401  oracle_spectral_bound=0.1457  scnet_full_aperture=0.2417  spatial_cnn=0.4262
+    N=1024  scnet=0.2415  oracle_tikhonov=0.2573  oracle_tsvd=0.2186  tikhonov_discrepancy=0.3077  prior_wiener=0.2401  oracle_spectral_bound=0.1457  scnet_full_aperture=0.2432  spatial_cnn=0.4700
+    N=2048  scnet=0.2415  oracle_tikhonov=0.2573  oracle_tsvd=0.2186  tikhonov_discrepancy=0.3108  prior_wiener=0.2401  oracle_spectral_bound=0.1457  scnet_full_aperture=0.2548  spatial_cnn=0.4856
+  wrote results/zero_shot.json
+  wrote results/zero_shot.csv
+  wrote results/figures/fig3_zero_shot.png
+
+SC-Net: 0.2451 at N=256 -> 0.2451 at N=2048 (drift 0.0%); paper: 0.2415 -> 0.2292
+
+[filters] training SC-Net
+    epoch    1/300  loss=1.27143  val_rel_l2=0.38634
+    epoch   50/300  loss=-5.20069  val_rel_l2=0.09890
+    epoch  100/300  loss=-5.22683  val_rel_l2=0.09886
+    epoch  150/300  loss=-5.17655  val_rel_l2=0.09845
+    epoch  200/300  loss=-5.26726  val_rel_l2=0.09873
+    epoch  250/300  loss=-5.19812  val_rel_l2=0.09855
+    epoch  300/300  loss=-5.21419  val_rel_l2=0.09841
+    delta=0.1     lambda_1=0.9964  cutoff=2.63 (tikh 2.50, theory~2.2)  width=3.17 vs 4.00  tail=0.630 vs 0.877
+    delta=0.05    lambda_1=0.9989  cutoff=3.22 (tikh 3.04, theory~2.7)  width=3.67 vs 5.02  tail=0.605 vs 0.914
+    delta=0.01    lambda_1=0.9998  cutoff=5.39 (tikh 5.30, theory~4.6)  width=6.19 vs 8.51  tail=1.217 vs 1.855
+    delta=0.001   lambda_1=0.9999  cutoff=11.34 (tikh 11.38, theory~10.0)  width=13.01 vs 18.22  tail=2.689 vs 4.164
+  wrote results/filters.json
+  wrote results/filter_profiles.csv
+  wrote results/figures/fig2_learned_filter.png
+
+claim checks:
+  PASS  filter_is_bounded_in_unit_interval
+  PASS  preserves_leading_modes
+  PASS  suppresses_high_modes
+  PASS  sharper_than_tikhonov
+  PASS  lighter_tail_than_tikhonov
+
+==============================================================================
+REPRODUCTION CRITERIA
+==============================================================================
+  [PASS]  convergence_order_paper_grid           0.4892   (|slope - 0.50| <= 0.05)
+  [PASS]  convergence_order_asymptotic           0.4992   (|slope - 0.50| <= 0.02)
+  [PASS]  zero_shot_error_magnitude              0.2415   (|e - 0.2292| / 0.2292 <= 0.15)
+  [PASS]  zero_shot_stability                    0.0000   (drift <= 0.05)
+  [PASS]  zero_shot_stability_full_aperture      0.0566   (drift <= 0.15)
+  [PASS]  beats_oracle_tikhonov                    True   (all(scnet < oracle_tikhonov))
+  [PASS]  beats_oracle_tikhonov_margin           0.0434   (margin > 0)
+  [PASS]  filter_is_interpretable                  True   (True)
+  [PASS]  filter_preserves_low_modes               True   (True)
+  [PASS]  filter_suppresses_high_modes             True   (True)
+  [PASS]  filter_sharper_than_tikhonov             True   (True)
+==============================================================================
+  wrote results/summary.json
