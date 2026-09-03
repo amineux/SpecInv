@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          # CPU-only torch keeps the runner download small; the package is CPU-only anyway.
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check src tests
+
+      - name: Format check
+        run: ruff format --check src tests
+
+      - name: Type check
+        run: mypy
+
+      - name: Test
+        run: pytest -q --cov=specinv --cov-report=term-missing
+
+  reproduce:
+    # A short end-to-end run of every experiment script. The published numbers need the
+    # full budget (see README); this only guards against the pipeline breaking.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -e ".[dev]"
+
+      - name: Smoke-run the experiments
+        run: |
+          python -m specinv.experiments.convergence \
+            --results-dir /tmp/results --epochs 40 --n-train 400 --n-test 200 \
+            --skip-extended --skip-white --no-figures
+          python -m specinv.experiments.zero_shot \
+            --results-dir /tmp/results --epochs 40 --n-train 400 --n-test 200 \
+            --skip-cnn --no-figures
+          python -m specinv.experiments.filters \
+            --results-dir /tmp/results --epochs 40 --n-train 400 --n-test 200 --no-figures
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: smoke-results
+          path: /tmp/results
