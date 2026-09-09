@@ -48,6 +48,7 @@ specinv-convergence = "specinv.experiments.convergence:main"
 specinv-zeroshot = "specinv.experiments.zero_shot:main"
 specinv-filters = "specinv.experiments.filters:main"
 specinv-all = "specinv.experiments.run_all:main"
+specinv-joint = "specinv.experiments.joint:main"
 
 [project.urls]
 Paper = "https://arxiv.org/abs/2603.20602"
@@ -56,7 +57,7 @@ Paper = "https://arxiv.org/abs/2603.20602"
 where = ["src"]
 
 [tool.setuptools.package-data]
-specinv = ["py.typed"]
+specinv = ["py.typed", "data/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

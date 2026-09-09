@@ -40,7 +40,7 @@ from ._common import (
     PAPER_REFERENCE,
     add_common_arguments,
     apply_quick,
-    build_suite,
+    build_suite_from_args,
     environment_info,
     evaluate_methods,
     output_dir,
@@ -75,7 +75,7 @@ def run_sweep(
 ) -> dict[str, Any]:
     """Train one model and sweep it over ``deltas``."""
     print(f"\n[{name}] noise_model={noise_model.value} resolution={n_modes}")
-    suite = build_suite(n_modes=max(n_modes, 2048), noise_model=noise_model)
+    suite = build_suite_from_args(args, n_modes=max(n_modes, 2048), noise_model=noise_model)
 
     delta_min, delta_max = min(deltas), max(deltas)
     band = suite.recommended_noise_band(delta_min, n_modes)
@@ -121,9 +121,7 @@ def run_sweep(
             )
         print(
             f"    delta={delta:<9g} "
-            + "  ".join(
-                f"{m}={s.mean_relative:.4f}" for m, s in summaries.items()
-            )
+            + "  ".join(f"{m}={s.mean_relative:.4f}" for m, s in summaries.items())
         )
 
     fits = {
@@ -146,9 +144,7 @@ def run_sweep(
         "errors": {m: e for m, e in per_method.items()},
         "rate_fits": fits,
         "rows": rows,
-        "predicted_rate": suite.noise_model.observable_rate(
-            suite.smoothness, suite.ill_posedness
-        ),
+        "predicted_rate": suite.noise_model.observable_rate(suite.smoothness, suite.ill_posedness),
         "optimal_truncation_index": optimal_truncation_index(
             np.asarray(deltas), suite.smoothness, suite.ill_posedness
         ).tolist(),
@@ -187,7 +183,9 @@ def make_figure(payload: dict[str, Any], path: Path) -> None:
         )
 
     reference = 0.77 * deltas ** payload["theory"]["deterministic_rate"]
-    ax.loglog(deltas, reference, color="k", lw=1.0, alpha=0.5, label=r"$\propto\delta^{0.5}$ (theory)")
+    ax.loglog(
+        deltas, reference, color="k", lw=1.0, alpha=0.5, label=r"$\propto\delta^{0.5}$ (theory)"
+    )
 
     ax.set_xlabel(r"relative noise level $\delta$")
     ax.set_ylabel(r"relative $L^2$ error")
@@ -249,7 +247,9 @@ def make_extended_figure(payload: dict[str, Any], path: Path) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = add_common_arguments(
-        argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+        argparse.ArgumentParser(
+            description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+        )
     )
     parser.add_argument(
         "--skip-extended",
@@ -269,7 +269,7 @@ def main(argv: list[str] | None = None) -> int:
     payload: dict[str, Any] = {
         "experiment": "convergence_rate",
         "paper_section": "5.2",
-        "environment": environment_info(),
+        "environment": environment_info(getattr(args, "spectrum", None)),
         "paper_reference": PAPER_REFERENCE,
         "theory": {
             "deterministic_rate": deterministic_rate(1.5, 1.5),

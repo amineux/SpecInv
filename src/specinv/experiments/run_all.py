@@ -177,21 +177,26 @@ def main(argv: list[str] | None = None) -> int:
             description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
         )
     )
-    parser.add_argument(
-        "--skip-ablations", action="store_true", help="skip the ablation study"
-    )
+    parser.add_argument("--skip-ablations", action="store_true", help="skip the ablation study")
     args = apply_quick(parser.parse_args(argv))
     directory = output_dir(args.results_dir)
 
     forwarded = [
-        "--results-dir", str(args.results_dir),
-        "--epochs", str(args.epochs),
-        "--n-train", str(args.n_train),
-        "--n-test", str(args.n_test),
-        "--seed", str(args.seed),
+        "--results-dir",
+        str(args.results_dir),
+        "--epochs",
+        str(args.epochs),
+        "--n-train",
+        str(args.n_train),
+        "--n-test",
+        str(args.n_test),
+        "--seed",
+        str(args.seed),
     ]
     if args.no_figures:
         forwarded.append("--no-figures")
+    if getattr(args, "spectrum", None):
+        forwarded.extend(["--spectrum", str(args.spectrum)])
 
     print("=" * 78)
     print("SpecInv: reproducing arXiv:2603.20602 (SC-Net)")

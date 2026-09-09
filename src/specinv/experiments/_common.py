@@ -30,9 +30,10 @@ from ..filters import (
     prior_wiener,
 )
 from ..metrics import ErrorSummary, summarise_errors
-from ..problems import InverseProblemSuite, NoiseModel, ProblemBatch, SobolevPrior
 from ..operators import power_law_operator
+from ..problems import InverseProblemSuite, NoiseModel, ProblemBatch, SobolevPrior
 from ..scnet import SCNet, SCNetConfig
+from ..spectrum_contract import SpectrumArtifact, load_spectrum_artifact, operator_from_artifact
 from ..training import TrainConfig, train_scnet
 
 __all__ = [
@@ -41,9 +42,10 @@ __all__ = [
     "PAPER_REFERENCE",
     "add_common_arguments",
     "build_suite",
+    "build_suite_from_args",
+    "environment_info",
     "evaluate_full_aperture",
     "evaluate_methods",
-    "environment_info",
     "output_dir",
     "train_model",
     "write_csv",
@@ -87,17 +89,39 @@ def build_suite(
     smoothness: float = 1.5,
     noise_model: str | NoiseModel = NoiseModel.CRITICAL,
     amplitude: str = "gaussian",
+    spectrum: SpectrumArtifact | None = None,
+    spectrum_path: str | Path | None = None,
 ) -> InverseProblemSuite:
-    """Instantiate the §5.1 suite.
+    """Instantiate the inverse-problem suite.
 
     ``n_modes`` is the *largest* resolution the suite must support (2048 for the zero-shot
     experiment); individual samples are drawn at whatever resolution is requested.
+
+    When ``spectrum`` or ``spectrum_path`` is given, the forward operator is the
+    KerOp-exported 1-D spectrum, not ``power_law_operator``.  The joint script
+    always takes that path.
     """
+    if spectrum is None and spectrum_path is not None:
+        spectrum = load_spectrum_artifact(spectrum_path)
+    if spectrum is not None:
+        operator = operator_from_artifact(spectrum, n_modes=n_modes)
+    else:
+        operator = power_law_operator(n_modes, ill_posedness)
     return InverseProblemSuite(
-        operator=power_law_operator(n_modes, ill_posedness),
+        operator=operator,
         prior=SobolevPrior(smoothness=smoothness, amplitude=amplitude),  # type: ignore[arg-type]
         noise_model=NoiseModel(noise_model),
     )
+
+
+def build_suite_from_args(
+    args: argparse.Namespace,
+    n_modes: int = 2048,
+    **kwargs: Any,
+) -> InverseProblemSuite:
+    """``build_suite`` using ``--spectrum`` when the joint path supplied one."""
+    spectrum_path = getattr(args, "spectrum", None)
+    return build_suite(n_modes=n_modes, spectrum_path=spectrum_path, **kwargs)
 
 
 def train_model(
@@ -188,9 +212,7 @@ def evaluate_methods(
             sel = discrepancy_principle_tikhonov(y, sv, batch.noise_norm)
             reconstructions[name], dampings[name] = sel.reconstruction, sel.damping
         elif name == "prior_wiener":
-            sel = prior_wiener(
-                y, sv, suite.prior.coefficient_scale(n_modes), batch.noise_scale
-            )
+            sel = prior_wiener(y, sv, suite.prior.coefficient_scale(n_modes), batch.noise_scale)
             reconstructions[name], dampings[name] = sel.reconstruction, sel.damping
         elif name == "oracle_spectral_bound":
             sel = oracle_spectral_bound(y, sv, truth)
@@ -222,9 +244,9 @@ def evaluate_full_aperture(
     return summarise_errors(reconstruction, batch.true_coefficients)
 
 
-def environment_info() -> dict[str, Any]:
+def environment_info(spectrum_path: str | Path | None = None) -> dict[str, Any]:
     """Record enough of the environment to make a result traceable."""
-    return {
+    info: dict[str, Any] = {
         "specinv_version": __version__,
         "python": sys.version.split()[0],
         "platform": platform.platform(),
@@ -232,6 +254,9 @@ def environment_info() -> dict[str, Any]:
         "torch": torch.__version__,
         "paper": "arXiv:2603.20602",
     }
+    if spectrum_path is not None:
+        info["kerop_spectrum"] = load_spectrum_artifact(spectrum_path).metadata()
+    return info
 
 
 def output_dir(path: str | Path) -> Path:
@@ -276,15 +301,9 @@ def add_common_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
         default="results",
         help="directory for JSON/CSV output (default: results)",
     )
-    parser.add_argument(
-        "--epochs", type=int, default=300, help="training epochs (default: 300)"
-    )
-    parser.add_argument(
-        "--n-train", type=int, default=2000, help="training samples (paper: 2000)"
-    )
-    parser.add_argument(
-        "--n-test", type=int, default=500, help="test samples (paper: 500)"
-    )
+    parser.add_argument("--epochs", type=int, default=300, help="training epochs (default: 300)")
+    parser.add_argument("--n-train", type=int, default=2000, help="training samples (paper: 2000)")
+    parser.add_argument("--n-test", type=int, default=500, help="test samples (paper: 500)")
     parser.add_argument("--seed", type=int, default=0, help="random seed (default: 0)")
     parser.add_argument(
         "--quick",
@@ -293,6 +312,12 @@ def add_common_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     )
     parser.add_argument(
         "--no-figures", action="store_true", help="skip matplotlib figure generation"
+    )
+    parser.add_argument(
+        "--spectrum",
+        default=None,
+        help="KerOp spectrum artifact (.npz or .json). When set, the operator "
+        "comes from that file instead of power_law_operator.",
     )
     return parser
 

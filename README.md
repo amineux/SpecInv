@@ -149,6 +149,19 @@ specinv-zeroshot      # Sec. 5.4, Fig. 3  -> zero_shot.{json,csv}
 python -m specinv.experiments.ablations    # -> ablations.{json,csv}
 ```
 
+Joint path with [KerOp](https://github.com/amineux/KerOp) — one script, both bars:
+
+```bash
+# KerOp must be importable (sibling checkout, KEROP_ROOT, or `pip install -e ../KerOp`).
+# If it is not, this exits non-zero and does *not* rerun the old 1D suite.
+specinv-joint --results-dir results/joint
+```
+
+KerOp writes a versioned spectrum artifact (`docs/KEROP_SPECTRUM.md`); SpecInv
+loads it and learns the filter on a target that path generated. `--quick` is a
+wiring smoke, not a graded 11/11 or a substitute for KerOp's matched-excess-risk
+bar. No new theorem; no invented speed-up factor.
+
 Add `--quick` for a fast smoke run (this will *not* reproduce the numbers — the criteria
 need the full budget), `--no-figures` to skip matplotlib, `--help` for the rest.
 

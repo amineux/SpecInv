@@ -36,7 +36,7 @@ from ..training import TrainConfig
 from ._common import (
     add_common_arguments,
     apply_quick,
-    build_suite,
+    build_suite_from_args,
     environment_info,
     output_dir,
     train_model,
@@ -183,9 +183,7 @@ def make_figure(payload: dict[str, Any], path: Path) -> None:
             lw=2.2,
             label=rf"SC-Net, $\delta={delta}$",
         )
-        ax.semilogx(
-            entry["modes"], entry["oracle_tikhonov"], "--", color=colour, lw=1.0, alpha=0.7
-        )
+        ax.semilogx(entry["modes"], entry["oracle_tikhonov"], "--", color=colour, lw=1.0, alpha=0.7)
     ax.set_ylim(-0.03, 1.05)
     ax.set_xlabel("spectral index $n$ (log)")
     ax.set_ylabel(r"damping $\lambda_n$")
@@ -210,7 +208,7 @@ def main(argv: list[str] | None = None) -> int:
     directory = output_dir(args.results_dir)
     figures = output_dir(directory / "figures")
 
-    suite = build_suite(n_modes=2048)
+    suite = build_suite_from_args(args, n_modes=2048)
     train_config = TrainConfig(
         n_train=args.n_train,
         n_val=args.n_test,
@@ -295,18 +293,14 @@ def main(argv: list[str] | None = None) -> int:
     payload: dict[str, Any] = {
         "experiment": "spectral_filter_interpretability",
         "paper_section": "5.3",
-        "environment": environment_info(),
+        "environment": environment_info(getattr(args, "spectrum", None)),
         "training": train_summary,
         "resolution": N_MODES,
         "profiles": profiles,
         "claims": claims,
         "claim_checks": {
             "filter_is_bounded_in_unit_interval": bool(
-                all(
-                    0.0 <= v <= 1.0
-                    for entry in profiles.values()
-                    for v in entry["scnet"]
-                )
+                all(0.0 <= v <= 1.0 for entry in profiles.values() for v in entry["scnet"])
             ),
             "preserves_leading_modes": bool(
                 all(c["scnet_leading_mode_damping"] > 0.9 for c in claims.values())
