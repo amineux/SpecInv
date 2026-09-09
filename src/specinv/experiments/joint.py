@@ -9,9 +9,9 @@ KerOp's recorded-bar operator ids today:
 
 * ``kerop.spectral`` — product-set eigenvalues of SpectralOperatorModel;
   this is the SpecInv 11/11 target (must have ≥ 2048 modes).
-* ``kerop.poisson`` — 1-D Dirichlet-Poisson wall-time spectrum (12 modes).
-  Not FEM. Too short for SpecInv 11/11. KerOp may rename this id; aliases
-  are accepted.
+* ``kerop.dirichlet1d`` — 1-D Dirichlet wall-time spectrum (12 modes).
+  Not FEM. Too short for SpecInv 11/11. KerOp's CLI still uses
+  ``--task poisson`` for this map.
 
 Usage::
 
@@ -223,7 +223,7 @@ def run_kerop_bar(
             "Live median is this run's number. The published spectral-quick "
             f"median is {KEROP_PUBLISHED_SPECTRAL_QUICK_MEDIAN_X}x -- do not "
             "re-claim that figure if the live number is lower. "
-            "kerop.poisson is 1-D Dirichlet wall-time, not FEM."
+            "kerop.dirichlet1d is 1-D Dirichlet wall-time, not FEM."
         ),
     }
 
@@ -475,7 +475,7 @@ def _run(args: argparse.Namespace) -> dict[str, Any]:
         "notes": [
             "Graded path loads kerop.filter_contract/v1 written by KerOp.",
             "SpecInv does not mint kerop.specinv.spectrum/v1 as the joint artifact.",
-            "kerop.poisson is 1-D Dirichlet wall-time (not FEM).",
+            "kerop.dirichlet1d is 1-D Dirichlet wall-time (not FEM).",
             (
                 f"KerOp published spectral-quick median {KEROP_PUBLISHED_SPECTRAL_QUICK_MEDIAN_X}x "
                 "is not re-claimed; live median is kerop.live_spectral_median_x."

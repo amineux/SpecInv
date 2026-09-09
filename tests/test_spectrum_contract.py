@@ -14,6 +14,7 @@ from specinv.spectrum_contract import (
     JointPathError,
     default_fixture_stem,
     estimate_ill_posedness,
+    find_kerop_contract_files,
     import_kerop,
     load_filter_contract,
     operator_from_contract,
@@ -109,38 +110,38 @@ def test_wrong_schema_is_rejected(tmp_path: Path) -> None:
         load_filter_contract(stem)
 
 
-def test_poisson_is_not_the_graded_inverse(tmp_path: Path) -> None:
+def test_dirichlet1d_is_not_the_graded_inverse(tmp_path: Path) -> None:
     stem = _write_contract(tmp_path, n_modes=3072)
-    poisson_evals = (np.arange(1, 13, dtype=np.float64) * np.pi) ** -2.0
+    dirichlet_evals = (np.arange(1, 13, dtype=np.float64) * np.pi) ** -2.0
     header = json.loads(stem.with_suffix(".json").read_text())
     header["operators"].append(
         {
-            "operator_id": "kerop.poisson",
+            "operator_id": "kerop.dirichlet1d",
             "seed": 20260301,
             "n": 150,
             "n_features": 110,
             "feature_count": 110,
-            "kind": "pde_solution_operator",
+            "kind": "dirichlet1d_solution_operator",
             "arrays": {
-                "eigenvalues": "poisson/eigenvalues",
-                "rf_spectrum": "poisson/rf_spectrum",
+                "eigenvalues": "dirichlet1d/eigenvalues",
+                "rf_spectrum": "dirichlet1d/rf_spectrum",
             },
         }
     )
     stem.with_suffix(".json").write_text(json.dumps(header))
     with np.load(stem.with_suffix(".npz"), allow_pickle=False) as arrays:
         data = {k: arrays[k] for k in arrays.files}
-    data["poisson/eigenvalues"] = poisson_evals
-    data["poisson/rf_spectrum"] = np.ones(8)
+    data["dirichlet1d/eigenvalues"] = dirichlet_evals
+    data["dirichlet1d/rf_spectrum"] = np.ones(8)
     np.savez(stem.with_suffix(".npz"), **data)
 
     contract = load_filter_contract(stem)
-    with pytest.raises(JointPathError, match="1-D wall-time Poisson"):
-        select_operator(contract, operator_id="kerop.poisson")
-    aliased = contract.by_id("kerop.poisson_1d")
-    assert aliased.operator_id == "kerop.poisson"
+    with pytest.raises(JointPathError, match="not FEM"):
+        select_operator(contract, operator_id="kerop.dirichlet1d")
+    aliased = contract.by_id("kerop.poisson")
+    assert aliased.operator_id == "kerop.dirichlet1d"
     assert aliased.note is not None and "not a FEM" in aliased.note
-    assert walltime_task_name("kerop.dirichlet_poisson_1d") == "poisson"
+    assert walltime_task_name("kerop.dirichlet1d") == "poisson"
 
 
 def test_import_kerop_fails_closed_when_missing(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -162,6 +163,16 @@ def test_import_kerop_fails_closed_when_missing(monkeypatch: pytest.MonkeyPatch)
         import_kerop()
 
 
+def test_prefers_sibling_kerop_fixture(tmp_path: Path) -> None:
+    kerop_root = tmp_path / "KerOp"
+    dest = kerop_root / "fixtures"
+    dest.mkdir(parents=True)
+    stem = _write_contract(dest, n_modes=64, schema=CONTRACT_SCHEMA)
+    found = find_kerop_contract_files(kerop_root)
+    assert found == stem
+    assert load_filter_contract(found).schema == CONTRACT_SCHEMA
+
+
 def test_committed_fixture_is_kerops_export() -> None:
     stem = default_fixture_stem()
     if not stem.with_suffix(".json").is_file():
@@ -173,6 +184,8 @@ def test_committed_fixture_is_kerops_export() -> None:
     assert spectral.operator_id == "kerop.spectral"
     assert spectral.n_modes >= 2048
     assert spectral.n == 150
-    poisson = contract.by_id("kerop.poisson")
-    assert poisson.n_modes == 12
-    assert poisson.note is not None
+    dirichlet = contract.by_id("kerop.dirichlet1d")
+    assert dirichlet.n_modes == 12
+    assert dirichlet.operator_id == "kerop.dirichlet1d"
+    assert dirichlet.note is not None
+    assert "not a FEM" in dirichlet.note

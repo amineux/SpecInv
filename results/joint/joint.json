@@ -9,6 +9,7 @@
   "graded": true,
   "joint_status": "fail",
   "joint_pass": false,
+  "stamp": "JOINT FAIL -- handshake wiring, not a joint win",
   "kerop": {
     "status": "pass",
     "pass": true,
@@ -64,7 +65,7 @@
         "n_test": 1000
       }
     },
-    "note": "Live median is this run's number. The published spectral-quick median is 27.717x -- do not re-claim that figure if the live number is lower. kerop.poisson is 1-D Dirichlet wall-time, not FEM."
+    "note": "Live median is this run's number. The published spectral-quick median is 27.717x -- do not re-claim that figure if the live number is lower. kerop.dirichlet1d is 1-D Dirichlet wall-time, not FEM."
   },
   "specinv": {
     "status": "fail",
@@ -183,7 +184,8 @@
   "notes": [
     "Graded path loads kerop.filter_contract/v1 written by KerOp.",
     "SpecInv does not mint kerop.specinv.spectrum/v1 as the joint artifact.",
-    "kerop.poisson is 1-D Dirichlet wall-time (not FEM).",
-    "KerOp published spectral-quick median 27.717x is not re-claimed; live median is kerop.live_spectral_median_x."
+    "kerop.dirichlet1d is 1-D Dirichlet wall-time (not FEM).",
+    "KerOp published spectral-quick median 27.717x is not re-claimed; live median is kerop.live_spectral_median_x.",
+    "JOINT FAIL -- handshake wiring, not a joint win."
   ]
 }

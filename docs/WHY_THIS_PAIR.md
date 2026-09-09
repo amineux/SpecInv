@@ -53,5 +53,6 @@ learns the inverse filter. `specinv-joint` runs both bars on that path:
 
 If the KerOp contract files are missing or the schema id mismatches, the
 joint script fails. It will not rerun the old 1-D suite and call that a
-joint result. `kerop.poisson` is 1-D Dirichlet wall-time, not FEM. This is
-plumbing, not a theorem.
+joint result. `kerop.dirichlet1d` is 1-D Dirichlet wall-time, not FEM.
+This is plumbing, not a theorem. The live graded run on this path is
+**JOINT FAIL** (SpecInv 8/11, KerOp live ~7×) — wiring, not a joint win.

@@ -4,11 +4,11 @@
   "producer": "kerop",
   "producer_version": "0.1.0",
   "consumer": "specinv",
-  "description": "Forward spectral quantities for the KerOp wall-time bar. Load the sibling .npz for the arrays named under operators[].arrays. See docs/FILTER_CONTRACT.md.",
+  "description": "Canonical KerOp \u2192 SpecInv handshake. Schema id is kerop.filter_contract/v1 only; do not mint a second schema. Load the sibling .npz for the arrays named under operators[].arrays. See docs/FILTER_CONTRACT.md.",
   "recorded_bar": {
     "protocol": "quick wall-time vs exact operator-valued KRR at matched excess risk (scripts/run_walltime_benchmark.py --quick)",
     "spectral_median_speedup_at_matched_risk": 27.71727018410563,
-    "poisson_median_speedup_at_matched_risk": 3.55604718390518
+    "dirichlet1d_median_speedup_at_matched_risk": 3.55604718390518
   },
   "operators": [
     {
@@ -85,8 +85,9 @@
       "spectrum_units": "absolute"
     },
     {
-      "kind": "pde_solution_operator",
-      "description": "Eigenvalues (k*pi)^{-2} of the 1D Dirichlet Poisson solution operator used by the Poisson wall-time bar.",
+      "kind": "dirichlet1d_solution_operator",
+      "is_fem": false,
+      "description": "Eigenvalues (k*pi)^{-2} of the existing 1D Dirichlet map (-u''=f on [0,1]) used by the wall-time bar. Closed form in the sine basis; not a FEM / Poisson-stiffness attachment.",
       "n_points": 12,
       "n_modes": 12,
       "output_dim": 12,
@@ -108,6 +109,7 @@
         "output_dim": 12,
         "n_summands": 9,
         "noise_std": 0.02,
+        "walltime_task": "poisson",
         "seed": 20260301,
         "n": 150,
         "n_features": 110,
@@ -132,17 +134,18 @@
         "results_file": "results/walltime_poisson.json",
         "median_speedup_at_matched_risk": 3.55604718390518,
         "min_speedup_at_matched_risk": 1.594794749678986,
-        "max_speedup_at_matched_risk": 44.17186286847536
+        "max_speedup_at_matched_risk": 44.17186286847536,
+        "note": "The experiment script still uses --task poisson; that is the 1D Dirichlet map, not a FEM attachment."
       },
-      "operator_id": "kerop.poisson",
+      "operator_id": "kerop.dirichlet1d",
       "seed": 20260301,
       "n": 150,
       "n_features": 110,
       "feature_count": 110,
       "coefficient_dim": 990,
       "arrays": {
-        "eigenvalues": "poisson/eigenvalues",
-        "rf_spectrum": "poisson/rf_spectrum"
+        "eigenvalues": "dirichlet1d/eigenvalues",
+        "rf_spectrum": "dirichlet1d/rf_spectrum"
       },
       "eigenvalues_shape": [
         12

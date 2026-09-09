@@ -159,9 +159,10 @@ specinv-joint --results-dir results/joint
 
 KerOp writes `kerop.filter_contract/v1` (`filter_contract_v1.{json,npz}`;
 `docs/KEROP_SPECTRUM.md`). SpecInv loads those files — not a self-minted
-spectrum schema — and learns the filter on that target. `--quick` is a
-wiring smoke, not a graded 11/11 or a substitute for KerOp's matched-excess-risk
-bar. No new theorem; the live KerOp median is printed as measured.
+spectrum schema — and learns the filter on that target. The live graded
+run is **JOINT FAIL** (SpecInv 8/11, KerOp live ~7×): handshake wiring,
+not a joint win. `--quick` is a wiring smoke, not a graded 11/11. The
+live KerOp median is printed as measured.
 
 Add `--quick` for a fast smoke run (this will *not* reproduce the numbers — the criteria
 need the full budget), `--no-figures` to skip matplotlib, `--help` for the rest.

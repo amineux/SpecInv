@@ -28,6 +28,7 @@ from .operators import DiagonalSpectralOperator
 __all__ = [
     "CONTRACT_SCHEMA",
     "CONTRACT_VERSION",
+    "DIRICHLET1D_OPERATOR_ID",
     "FILTER_CONTRACT_SCHEMA",
     "GRADED_OPERATOR_ID",
     "FilterContract",
@@ -57,10 +58,15 @@ GRADED_OPERATOR_ID = "kerop.spectral"
 # SpecInv's Sobolev prior for the inverse problem. KerOp's ``r`` is a different
 # source-condition exponent and is not substituted here.
 SPECINV_SMOOTHNESS = 1.5
-# KerOp's wall-time Poisson id is 1-D Dirichlet (12 collocation points), not FEM.
-# Accept a rename if KerOp drops the misleading ``kerop.poisson`` label.
-_POISSON_1D_IDS = frozenset(
+# KerOp main ships ``kerop.dirichlet1d`` (12 collocation points). That is the
+# 1-D Dirichlet wall-time map, not FEM. ``kerop.poisson`` is reserved unused
+# on KerOp; we still accept it as a legacy alias so an old file cannot be
+# mistaken for a FEM attachment.
+DIRICHLET1D_OPERATOR_ID = "kerop.dirichlet1d"
+_DIRICHLET1D_IDS = frozenset(
     {
+        DIRICHLET1D_OPERATOR_ID,
+        "kerop.walltime_poisson1d",
         "kerop.poisson",
         "kerop.poisson_1d",
         "kerop.dirichlet_poisson_1d",
@@ -116,9 +122,9 @@ class KerOpOperator:
 
     @property
     def note(self) -> str | None:
-        if self.operator_id in _POISSON_1D_IDS:
+        if self.operator_id in _DIRICHLET1D_IDS:
             return (
-                "kerop.poisson is KerOp's 1-D Dirichlet wall-time operator "
+                "kerop.dirichlet1d is KerOp's 1-D Dirichlet wall-time operator "
                 "(12 collocation points), not a FEM Poisson solve."
             )
         return None
@@ -167,16 +173,28 @@ class FilterContract:
 
 
 def _aliases(operator_id: str) -> set[str]:
-    if operator_id in _POISSON_1D_IDS or operator_id.endswith("poisson"):
-        return set(_POISSON_1D_IDS)
+    if (
+        operator_id in _DIRICHLET1D_IDS
+        or "dirichlet" in operator_id
+        or operator_id.endswith("poisson")
+    ):
+        return set(_DIRICHLET1D_IDS)
     if operator_id in _SPECTRAL_IDS or operator_id.endswith("spectral"):
         return set(_SPECTRAL_IDS)
     return {operator_id}
 
 
 def walltime_task_name(operator_id: str) -> str:
-    """Map a KerOp operator id onto ``run_walltime_benchmark(task=...)``."""
-    if operator_id in _POISSON_1D_IDS or operator_id.endswith("poisson"):
+    """Map a KerOp operator id onto ``run_walltime_benchmark(task=...)``.
+
+    KerOp's CLI still uses ``--task poisson`` for the 1-D Dirichlet map.
+    That task is not FEM.
+    """
+    if (
+        operator_id in _DIRICHLET1D_IDS
+        or "dirichlet" in operator_id
+        or operator_id.endswith("poisson")
+    ):
         return "poisson"
     if operator_id in _SPECTRAL_IDS or operator_id.endswith("spectral"):
         return "spectral"
@@ -410,7 +428,8 @@ def select_operator(
         raise JointPathError(
             f"{chosen.operator_id} has {chosen.n_modes} eigenvalues; "
             f"SpecInv 11/11 needs at least {int(require_min_modes)}. "
-            f"(If this is KerOp's 1-D wall-time Poisson, it is not FEM and not the graded inverse.)"
+            f"(If this is KerOp's kerop.dirichlet1d wall-time map, it is not FEM "
+            f"and not the graded inverse.)"
         )
     return chosen
 
@@ -426,11 +445,15 @@ def operator_from_contract(
 
 
 def find_kerop_contract_files(kerop_root: str | Path | None = None) -> Path | None:
-    """Look for ``filter_contract_v1`` already written by KerOp."""
+    """Prefer KerOp's committed fixture on a sibling / ``KEROP_ROOT`` checkout.
+
+    SpecInv's copied fixture is last-resort only. Wrong schema still fails closed
+    at load time.
+    """
     for root in candidate_kerop_roots(kerop_root):
         for rel in (
-            Path("results") / "filter_contract" / "filter_contract_v1",
             Path("fixtures") / "filter_contract_v1",
+            Path("results") / "filter_contract" / "filter_contract_v1",
         ):
             stem = root / rel
             if stem.with_suffix(".json").is_file() and stem.with_suffix(".npz").is_file():

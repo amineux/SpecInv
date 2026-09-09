@@ -25,7 +25,7 @@ Each `operators[]` record includes:
 
 | Field | Meaning |
 |---|---|
-| `operator_id` | `kerop.spectral` or `kerop.poisson` (KerOp may rename the latter) |
+| `operator_id` | `kerop.spectral` or `kerop.dirichlet1d` |
 | `n` | KerOp **training sample size** (default 150), not the eigenvalue count |
 | `n_features` / `feature_count` | Random-feature count `M` |
 | `arrays.eigenvalues` | NPZ key for the descending forward spectrum |
@@ -33,11 +33,11 @@ Each `operators[]` record includes:
 | `reproduce` | CLI / train sizes / lambda grid / `task_kwargs` that reproduce the bar |
 | `recorded_bar` | Copied medians from KerOp's committed wall-time JSONs |
 
-`kerop.poisson` is KerOp's **1-D Dirichlet** wall-time operator (12
+`kerop.dirichlet1d` is KerOp's **1-D Dirichlet** wall-time operator (12
 collocation points). It is **not** FEM Poisson. It does not have enough
-eigenvalues for SpecInv 11/11. SpecInv accepts documented aliases
-(`kerop.poisson_1d`, `kerop.dirichlet_poisson_1d`, `kerop.walltime_1d`,
-`kerop.walltime_poisson_1d`) if KerOp renames it.
+eigenvalues for SpecInv 11/11. KerOp reserves `kerop.poisson` and does
+not use it. SpecInv still accepts that string as a legacy alias so an
+old file cannot be read as FEM.
 
 ## Joint instance
 
@@ -57,9 +57,9 @@ eigenvalues for SpecInv 11/11. SpecInv accepts documented aliases
 `specinv-joint` resolves, in order:
 
 1. `--contract PATH` (alias: `--spectrum`)
-2. `--kerop-root` / `KEROP_ROOT` / a sibling KerOp checkout that already
-   contains `filter_contract_v1.{json,npz}`
-3. this repo's committed fixture (copied from KerOp)
+2. `--kerop-root` / `KEROP_ROOT` / a sibling KerOp checkout — prefer
+   KerOp's committed `fixtures/filter_contract_v1` (merged on KerOp main)
+3. this repo's last-resort copy of that same KerOp export
 4. `--write-contract`: ask **KerOp** to write its own files
 
 If the files are missing or `schema` is not `kerop.filter_contract/v1`, the
