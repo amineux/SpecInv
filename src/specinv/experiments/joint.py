@@ -53,7 +53,7 @@ from ..spectrum_contract import (
     write_spectrum_artifact,
 )
 from ..training import TrainConfig
-from . import convergence, filters, run_all, zero_shot
+from . import run_all
 from ._common import apply_quick, environment_info, output_dir, train_model, write_json
 
 # KerOp's committed spectral-quick median (results/walltime_spectral.json).
@@ -316,10 +316,8 @@ def _full_specinv_bars(
     if args.no_figures:
         forwarded.append("--no-figures")
     print("\n[joint] SpecInv 11/11 on the KerOp-generated operator", flush=True)
-    # Individual scripts so a failure still writes whatever it finished.
-    convergence.main(forwarded)
-    zero_shot.main(forwarded)
-    filters.main(forwarded)
+    # run_all owns --skip-ablations and forwards only the common flags.
+    run_all.main(forwarded)
 
     def load(name: str) -> dict[str, Any]:
         return json.loads((Path(args.results_dir) / name).read_text())
