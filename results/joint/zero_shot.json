@@ -1,0 +1,203 @@
+{
+  "experiment": "zero_shot_resolution_transfer",
+  "paper_section": "5.4",
+  "environment": {
+    "specinv_version": "0.1.0",
+    "python": "3.12.3",
+    "platform": "Linux-6.12.94+-x86_64-with-glibc2.39",
+    "numpy": "2.4.4",
+    "torch": "2.14.0+cpu",
+    "paper": "arXiv:2603.20602",
+    "kerop_spectrum": {
+      "schema": "kerop.specinv.spectrum/v1",
+      "schema_version": 1,
+      "operator_id": "kerop.spectral/v1:r=0.5:b=0.6666666667:n=2048:dv=6:seed=20260301",
+      "seed": 20260301,
+      "n": 2048,
+      "feature_count": 298,
+      "r": 0.5,
+      "b": 0.6666666666666666,
+      "output_dim": 6,
+      "ill_posedness": 1.5,
+      "source": "kerop.SpectralOperatorModel",
+      "kerop_version": "0.1.0",
+      "fingerprint": "4a3ad7bb339ef9a6",
+      "feature_n_ref": 600,
+      "generated_by": "specinv.spectrum_contract.export_kerop_spectrum",
+      "n_summands": 1
+    }
+  },
+  "paper_reference": {
+    "scnet_rate_slope": 0.5,
+    "oracle_tikhonov_rate_slope": 0.42,
+    "theoretical_rate_s_p_1p5": 0.5,
+    "zero_shot_error_n256": 0.2415,
+    "zero_shot_error_n2048": 0.2292,
+    "train_resolution": 256,
+    "test_resolutions": [
+      512,
+      1024,
+      2048
+    ],
+    "n_train": 2000,
+    "n_test": 500
+  },
+  "resolutions": [
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "trained_resolution": 256,
+  "training": {
+    "n_parameters": 8833,
+    "lipschitz_bound": 10.627730238940714,
+    "epochs": 300,
+    "n_train": 2000,
+    "train_resolution": 256,
+    "delta_range": [
+      0.001,
+      0.1
+    ],
+    "gamma": 0.0,
+    "final_val_relative_l2": 0.09840812534093857,
+    "best_val_relative_l2": 0.09837374091148376,
+    "wall_time_seconds": 41.17616747500051,
+    "feature_names": [
+      "log_sigma",
+      "log_coeff",
+      "log_naive",
+      "log_amplitude",
+      "log_noise",
+      "log_snr"
+    ],
+    "noise_band": [
+      32,
+      64
+    ]
+  },
+  "spatial_cnn_training": {
+    "n_parameters": 83665,
+    "best_val_relative_l2": 0.1374496966600418,
+    "wall_time_seconds": 192.96721058800085
+  },
+  "primary": {
+    "delta": 0.1,
+    "curves": {
+      "scnet": {
+        "256": 0.24506254652137596,
+        "512": 0.24506267422644898,
+        "1024": 0.24506269013161336,
+        "2048": 0.24506269211092246
+      },
+      "oracle_tikhonov": {
+        "256": 0.2609285131048738,
+        "512": 0.2609287838933477,
+        "1024": 0.26092881734062967,
+        "2048": 0.26092882149425006
+      },
+      "oracle_tsvd": {
+        "256": 0.22168504339773967,
+        "512": 0.22168518380169833,
+        "1024": 0.2216852012309975,
+        "2048": 0.2216852034102148
+      },
+      "tikhonov_discrepancy": {
+        "256": 0.3063901054603404,
+        "512": 0.3095665311747869,
+        "1024": 0.312752956575009,
+        "2048": 0.31592037739486784
+      },
+      "prior_wiener": {
+        "256": 0.2436649338272938,
+        "512": 0.24366506297019583,
+        "1024": 0.2436650790624635,
+        "2048": 0.2436650810665704
+      },
+      "oracle_spectral_bound": {
+        "256": 0.14786556752404267,
+        "512": 0.14786569716362305,
+        "1024": 0.1478657129857492,
+        "2048": 0.1478657149622116
+      },
+      "scnet_full_aperture": {
+        "256": 0.24506254652137596,
+        "512": 0.24526518618127444,
+        "1024": 0.24687632330660686,
+        "2048": 0.2589238638502999
+      },
+      "spatial_cnn": {
+        "256": 0.31659389624858797,
+        "512": 0.42971620217368117,
+        "1024": 0.4733816677733783,
+        "2048": 0.4892642669119895
+      }
+    }
+  },
+  "matched_to_paper": {
+    "delta": 0.09705564542962648,
+    "curves": {
+      "scnet": {
+        "256": 0.24149367778160785,
+        "512": 0.24149380753424893,
+        "1024": 0.2414938236938276,
+        "2048": 0.24149382570477648
+      },
+      "oracle_tikhonov": {
+        "256": 0.2573043695784686,
+        "512": 0.25730464411763354,
+        "1024": 0.2573046780259156,
+        "2048": 0.2573046822377689
+      },
+      "oracle_tsvd": {
+        "256": 0.2185752466584099,
+        "512": 0.21857538919402753,
+        "1024": 0.21857540688901922,
+        "2048": 0.21857540910131393
+      },
+      "tikhonov_discrepancy": {
+        "256": 0.30152374700346707,
+        "512": 0.30460335442701275,
+        "1024": 0.30769403273783974,
+        "2048": 0.3107670152126275
+      },
+      "prior_wiener": {
+        "256": 0.24009943474328513,
+        "512": 0.2400995659001159,
+        "1024": 0.2400995822433946,
+        "2048": 0.24009958427869965
+      },
+      "oracle_spectral_bound": {
+        "256": 0.14567975785105716,
+        "512": 0.14567988919615948,
+        "1024": 0.14567990522761343,
+        "2048": 0.14567990723004343
+      },
+      "scnet_full_aperture": {
+        "256": 0.24149367778160785,
+        "512": 0.2416872835543201,
+        "1024": 0.2432270499809519,
+        "2048": 0.25476205176073835
+      },
+      "spatial_cnn": {
+        "256": 0.31082478266591,
+        "512": 0.4262356507598366,
+        "1024": 0.46996914721076516,
+        "2048": 0.48556650516857836
+      }
+    }
+  },
+  "summary": {
+    "scnet_error_at_train_resolution": 0.24506254652137596,
+    "scnet_error_at_finest_resolution": 0.24506269211092246,
+    "relative_drift_train_to_finest": 5.940913802150568e-07,
+    "paper_error_n256": 0.2415,
+    "paper_error_n2048": 0.2292,
+    "scnet_full_aperture_error_at_train_resolution": 0.24506254652137596,
+    "scnet_full_aperture_error_at_finest_resolution": 0.2589238638502999,
+    "scnet_full_aperture_drift": 0.056562365509063545,
+    "spatial_cnn_error_at_train_resolution": 0.31659389624858797,
+    "spatial_cnn_error_at_finest_resolution": 0.4892642669119895,
+    "spatial_cnn_degradation_factor": 1.5454001884098916
+  }
+}
