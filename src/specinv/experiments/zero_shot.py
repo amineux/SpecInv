@@ -280,7 +280,10 @@ def main(argv: list[str] | None = None) -> int:
     payload: dict[str, Any] = {
         "experiment": "zero_shot_resolution_transfer",
         "paper_section": "5.4",
-        "environment": environment_info(getattr(args, "spectrum", None)),
+        "environment": environment_info(
+            getattr(args, "spectrum", None),
+            operator_id=getattr(args, "operator_id", None),
+        ),
         "paper_reference": PAPER_REFERENCE,
         "resolutions": list(RESOLUTIONS),
         "trained_resolution": TRAIN_RESOLUTION,

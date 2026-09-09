@@ -157,10 +157,11 @@ Joint path with [KerOp](https://github.com/amineux/KerOp) — one script, both b
 specinv-joint --results-dir results/joint
 ```
 
-KerOp writes a versioned spectrum artifact (`docs/KEROP_SPECTRUM.md`); SpecInv
-loads it and learns the filter on a target that path generated. `--quick` is a
+KerOp writes `kerop.filter_contract/v1` (`filter_contract_v1.{json,npz}`;
+`docs/KEROP_SPECTRUM.md`). SpecInv loads those files — not a self-minted
+spectrum schema — and learns the filter on that target. `--quick` is a
 wiring smoke, not a graded 11/11 or a substitute for KerOp's matched-excess-risk
-bar. No new theorem; no invented speed-up factor.
+bar. No new theorem; the live KerOp median is printed as measured.
 
 Add `--quick` for a fast smoke run (this will *not* reproduce the numbers — the criteria
 need the full budget), `--no-figures` to skip matplotlib, `--help` for the rest.

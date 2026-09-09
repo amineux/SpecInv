@@ -33,7 +33,13 @@ from ..metrics import ErrorSummary, summarise_errors
 from ..operators import power_law_operator
 from ..problems import InverseProblemSuite, NoiseModel, ProblemBatch, SobolevPrior
 from ..scnet import SCNet, SCNetConfig
-from ..spectrum_contract import SpectrumArtifact, load_spectrum_artifact, operator_from_artifact
+from ..spectrum_contract import (
+    FilterContract,
+    KerOpOperator,
+    load_filter_contract,
+    operator_from_contract,
+    select_operator,
+)
 from ..training import TrainConfig, train_scnet
 
 __all__ = [
@@ -83,14 +89,25 @@ METHOD_LABELS: dict[str, str] = {
 }
 
 
+def _load_kerop_operator(
+    spectrum_path: str | Path,
+    operator_id: str | None = None,
+    *,
+    require_min_modes: int | None = None,
+) -> KerOpOperator:
+    contract = load_filter_contract(spectrum_path)
+    return select_operator(contract, operator_id=operator_id, require_min_modes=require_min_modes)
+
+
 def build_suite(
     n_modes: int = 2048,
     ill_posedness: float = 1.5,
     smoothness: float = 1.5,
     noise_model: str | NoiseModel = NoiseModel.CRITICAL,
     amplitude: str = "gaussian",
-    spectrum: SpectrumArtifact | None = None,
+    spectrum: FilterContract | KerOpOperator | None = None,
     spectrum_path: str | Path | None = None,
+    operator_id: str | None = None,
 ) -> InverseProblemSuite:
     """Instantiate the inverse-problem suite.
 
@@ -98,13 +115,25 @@ def build_suite(
     experiment); individual samples are drawn at whatever resolution is requested.
 
     When ``spectrum`` or ``spectrum_path`` is given, the forward operator is the
-    KerOp-exported 1-D spectrum, not ``power_law_operator``.  The joint script
-    always takes that path.
+    eigenvalues KerOp wrote in ``kerop.filter_contract/v1``, not
+    ``power_law_operator``.  The joint script always takes that path.
     """
-    if spectrum is None and spectrum_path is not None:
-        spectrum = load_spectrum_artifact(spectrum_path)
-    if spectrum is not None:
-        operator = operator_from_artifact(spectrum, n_modes=n_modes)
+    operator_record: KerOpOperator | None = None
+    if isinstance(spectrum, KerOpOperator):
+        operator_record = spectrum
+    elif isinstance(spectrum, FilterContract):
+        operator_record = select_operator(
+            spectrum, operator_id=operator_id, require_min_modes=n_modes
+        )
+    elif spectrum_path is not None:
+        operator_record = _load_kerop_operator(
+            spectrum_path, operator_id=operator_id, require_min_modes=n_modes
+        )
+    if operator_record is not None:
+        width = min(int(n_modes), operator_record.n_modes)
+        operator = operator_from_contract(operator_record, n_modes=width)
+        ill_posedness = operator_record.ill_posedness
+        smoothness = operator_record.smoothness
     else:
         operator = power_law_operator(n_modes, ill_posedness)
     return InverseProblemSuite(
@@ -121,7 +150,13 @@ def build_suite_from_args(
 ) -> InverseProblemSuite:
     """``build_suite`` using ``--spectrum`` when the joint path supplied one."""
     spectrum_path = getattr(args, "spectrum", None)
-    return build_suite(n_modes=n_modes, spectrum_path=spectrum_path, **kwargs)
+    operator_id = getattr(args, "operator_id", None)
+    return build_suite(
+        n_modes=n_modes,
+        spectrum_path=spectrum_path,
+        operator_id=operator_id,
+        **kwargs,
+    )
 
 
 def train_model(
@@ -244,7 +279,10 @@ def evaluate_full_aperture(
     return summarise_errors(reconstruction, batch.true_coefficients)
 
 
-def environment_info(spectrum_path: str | Path | None = None) -> dict[str, Any]:
+def environment_info(
+    spectrum_path: str | Path | None = None,
+    operator_id: str | None = None,
+) -> dict[str, Any]:
     """Record enough of the environment to make a result traceable."""
     info: dict[str, Any] = {
         "specinv_version": __version__,
@@ -255,7 +293,15 @@ def environment_info(spectrum_path: str | Path | None = None) -> dict[str, Any]:
         "paper": "arXiv:2603.20602",
     }
     if spectrum_path is not None:
-        info["kerop_spectrum"] = load_spectrum_artifact(spectrum_path).metadata()
+        contract = load_filter_contract(spectrum_path)
+        chosen = select_operator(contract, operator_id=operator_id)
+        info["kerop_filter_contract"] = {
+            "schema": contract.schema,
+            "stem": str(contract.stem),
+            "producer": contract.producer,
+            "producer_version": contract.producer_version,
+            "operator": chosen.metadata(),
+        }
     return info
 
 
@@ -316,8 +362,16 @@ def add_common_arguments(parser: argparse.ArgumentParser) -> argparse.ArgumentPa
     parser.add_argument(
         "--spectrum",
         default=None,
-        help="KerOp spectrum artifact (.npz or .json). When set, the operator "
-        "comes from that file instead of power_law_operator.",
+        help=(
+            "KerOp filter_contract_v1 stem or .json/.npz pair "
+            "(schema kerop.filter_contract/v1). When set, the operator comes "
+            "from that export instead of power_law_operator."
+        ),
+    )
+    parser.add_argument(
+        "--operator-id",
+        default=None,
+        help="KerOp operators[] id to invert (default: kerop.spectral).",
     )
     return parser
 

@@ -182,14 +182,24 @@ def make_figure(payload: dict[str, Any], path: Path) -> None:
             **styles.get(method, {}),
         )
 
-    reference = 0.77 * deltas ** payload["theory"]["deterministic_rate"]
+    rate = float(payload["theory"]["deterministic_rate"])
+    smoothness = payload["theory"]["smoothness"]
+    ill_posedness = payload["theory"]["ill_posedness"]
+    reference = 0.77 * deltas**rate
     ax.loglog(
-        deltas, reference, color="k", lw=1.0, alpha=0.5, label=r"$\propto\delta^{0.5}$ (theory)"
+        deltas,
+        reference,
+        color="k",
+        lw=1.0,
+        alpha=0.5,
+        label=rf"$\propto\delta^{{{rate:.2f}}}$ (theory)",
     )
 
     ax.set_xlabel(r"relative noise level $\delta$")
     ax.set_ylabel(r"relative $L^2$ error")
-    ax.set_title("Convergence order (critical noise model, $s=p=1.5$)")
+    ax.set_title(
+        f"Convergence order (critical noise model, $s={smoothness:g}$, $p={ill_posedness:g}$)"
+    )
     ax.grid(True, which="both", alpha=0.25)
     ax.legend(fontsize=7, loc="lower right")
     fig.tight_layout()
@@ -226,7 +236,7 @@ def make_extended_figure(payload: dict[str, Any], path: Path) -> None:
         payload["theory"]["deterministic_rate"],
         color="k",
         ls="--",
-        label=r"theory $s/(s+p)=0.5$",
+        label=rf"theory $s/(s+p)={payload['theory']['deterministic_rate']:.2f}$",
     )
     ax.axhline(
         payload["theory"]["statistical_rate"],
@@ -236,7 +246,10 @@ def make_extended_figure(payload: dict[str, Any], path: Path) -> None:
     )
     ax.set_xlabel(r"window centre in $\delta$")
     ax.set_ylabel("local convergence order")
-    ax.set_title("Convergence order approaches 0.5 as $\\delta\\to0$")
+    ax.set_title(
+        f"Convergence order approaches "
+        f"{payload['theory']['deterministic_rate']:.2f} as $\\delta\\to0$"
+    )
     ax.grid(True, which="both", alpha=0.25)
     ax.legend(fontsize=8)
     fig.tight_layout()
@@ -266,16 +279,25 @@ def main(argv: list[str] | None = None) -> int:
     directory = output_dir(args.results_dir)
     figures = output_dir(directory / "figures")
 
+    probe = build_suite_from_args(args, n_modes=2048)
+    smoothness = float(probe.smoothness)
+    ill_posedness = float(probe.ill_posedness)
+    theory_rate = deterministic_rate(smoothness, ill_posedness)
+    stat_rate = statistical_rate(smoothness, ill_posedness)
+
     payload: dict[str, Any] = {
         "experiment": "convergence_rate",
         "paper_section": "5.2",
-        "environment": environment_info(getattr(args, "spectrum", None)),
+        "environment": environment_info(
+            getattr(args, "spectrum", None),
+            operator_id=getattr(args, "operator_id", None),
+        ),
         "paper_reference": PAPER_REFERENCE,
         "theory": {
-            "deterministic_rate": deterministic_rate(1.5, 1.5),
-            "statistical_rate": statistical_rate(1.5, 1.5),
-            "smoothness": 1.5,
-            "ill_posedness": 1.5,
+            "deterministic_rate": theory_rate,
+            "statistical_rate": stat_rate,
+            "smoothness": smoothness,
+            "ill_posedness": ill_posedness,
         },
         "sweeps": {},
     }
@@ -305,7 +327,9 @@ def main(argv: list[str] | None = None) -> int:
     scnet_slope = payload["sweeps"]["paper_grid"]["rate_fits"]["scnet"]["slope"]
     print(
         f"\nSC-Net order on the paper's grid: {scnet_slope:.4f} "
-        f"(paper 0.50, theory {deterministic_rate(1.5, 1.5):.2f})"
+        f"(paper 0.50, theory {payload['theory']['deterministic_rate']:.4f} "
+        f"for s={payload['theory']['smoothness']:g}, "
+        f"p={payload['theory']['ill_posedness']:g})"
     )
     if "extended_grid" in payload["sweeps"]:
         ext = payload["sweeps"]["extended_grid"]["rate_fits"]["scnet"]["slope"]

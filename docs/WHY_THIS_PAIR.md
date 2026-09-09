@@ -39,17 +39,19 @@ Cite the **papers first**, then this software as independent verification.
 
 ## The one joint path (not a new result)
 
-Team verdict: keep **one** path. KerOp exports a forward spectrum
-(`kerop.specinv.spectrum/v1`, see [KEROP_SPECTRUM.md](KEROP_SPECTRUM.md)).
-SpecInv consumes that file and learns the inverse filter. `specinv-joint`
-runs both bars on that path:
+Team verdict: keep **one** path. KerOp writes `kerop.filter_contract/v1`
+(`filter_contract_v1.{json,npz}`; see [KEROP_SPECTRUM.md](KEROP_SPECTRUM.md)).
+SpecInv loads **those** files — not a SpecInv-minted parallel schema — and
+learns the inverse filter. `specinv-joint` runs both bars on that path:
 
-* KerOp: matched-excess-risk wall-clock comparison on the **same**
-  `SpectralOperatorModel` (the published spectral-quick median is ~28x; the
-  joint script *checks* that the path still has a matched-risk win, and does
-  not invent a new factor).
-* SpecInv: the existing 11/11 suite (rate, zero-shot, beat Oracle Tikhonov,
-  filter checks) on a target sampled from that spectrum.
+* KerOp: live matched-excess-risk wall-clock comparison using the contract's
+  `reproduce` settings. Print the live median. The published spectral-quick
+  median is ~27.7×; do not re-claim that figure if this run is lower.
+* SpecInv: the existing 11/11 suite (rate vs `s/(s+p)` for **this** spectrum,
+  zero-shot, beat Oracle Tikhonov, filter checks) on a target sampled from
+  KerOp's `kerop.spectral` eigenvalues.
 
-If KerOp cannot be imported, the joint script fails. It will not rerun the
-old 1-D suite and call that a joint result. This is plumbing, not a theorem.
+If the KerOp contract files are missing or the schema id mismatches, the
+joint script fails. It will not rerun the old 1-D suite and call that a
+joint result. `kerop.poisson` is 1-D Dirichlet wall-time, not FEM. This is
+plumbing, not a theorem.

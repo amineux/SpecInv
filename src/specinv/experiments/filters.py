@@ -293,7 +293,10 @@ def main(argv: list[str] | None = None) -> int:
     payload: dict[str, Any] = {
         "experiment": "spectral_filter_interpretability",
         "paper_section": "5.3",
-        "environment": environment_info(getattr(args, "spectrum", None)),
+        "environment": environment_info(
+            getattr(args, "spectrum", None),
+            operator_id=getattr(args, "operator_id", None),
+        ),
         "training": train_summary,
         "resolution": N_MODES,
         "profiles": profiles,

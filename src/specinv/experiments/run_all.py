@@ -90,16 +90,22 @@ def build_criteria(
     return [
         Criterion(
             "convergence_order_paper_grid",
-            "Fitted order of SC-Net on the paper's noise grid is within 0.05 of s/(s+p)=0.5",
+            (
+                "Fitted order of SC-Net on the paper's noise grid is within 0.05 of "
+                f"s/(s+p)={theory:.4f}"
+            ),
             scnet_slope,
-            f"|slope - {theory:.2f}| <= 0.05",
+            f"|slope - {theory:.4f}| <= 0.05",
             abs(scnet_slope - theory) <= 0.05,
         ),
         Criterion(
             "convergence_order_asymptotic",
-            "Fitted order on the extended grid (delta down to 1e-8) is within 0.02 of 0.5",
+            (
+                "Fitted order on the extended grid (delta down to 1e-8) is within 0.02 of "
+                f"s/(s+p)={theory:.4f}"
+            ),
             extended_slope,
-            f"|slope - {theory:.2f}| <= 0.02",
+            f"|slope - {theory:.4f}| <= 0.02",
             abs(extended_slope - theory) <= 0.02,
         ),
         Criterion(
@@ -197,6 +203,8 @@ def main(argv: list[str] | None = None) -> int:
         forwarded.append("--no-figures")
     if getattr(args, "spectrum", None):
         forwarded.extend(["--spectrum", str(args.spectrum)])
+    if getattr(args, "operator_id", None):
+        forwarded.extend(["--operator-id", str(args.operator_id)])
 
     print("=" * 78)
     print("SpecInv: reproducing arXiv:2603.20602 (SC-Net)")

@@ -1,0 +1,3 @@
+filter_contract_v1.{json,npz} is a copy of KerOp's
+`kerop export-filter-contract` output (schema kerop.filter_contract/v1).
+Do not regenerate these files from SpecInv. Re-copy from KerOp if the export changes.

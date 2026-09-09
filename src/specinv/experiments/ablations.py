@@ -139,7 +139,10 @@ def main(argv: list[str] | None = None) -> int:
     payload = {
         "experiment": "ablations",
         "paper_section": "n/a (implementation study)",
-        "environment": environment_info(getattr(args, "spectrum", None)),
+        "environment": environment_info(
+            getattr(args, "spectrum", None),
+            operator_id=getattr(args, "operator_id", None),
+        ),
         "train_resolution": TRAIN_RESOLUTION,
         "transfer_resolution": TRANSFER_RESOLUTION,
         "eval_deltas": list(EVAL_DELTAS),
