@@ -39,8 +39,8 @@ from typing import Any
 
 import numpy as np
 
-from ..basis import SineBasis
 from ..baselines import SpatialCNN, SpatialCNNConfig, train_spatial_cnn
+from ..basis import SineBasis
 from ..metrics import summarise_errors
 from ..scnet import SCNetConfig
 from ..training import TrainConfig
@@ -49,7 +49,7 @@ from ._common import (
     PAPER_REFERENCE,
     add_common_arguments,
     apply_quick,
-    build_suite,
+    build_suite_from_args,
     environment_info,
     evaluate_full_aperture,
     evaluate_methods,
@@ -88,9 +88,7 @@ def evaluate_at_resolutions(
         if spatial is not None:
             basis = SineBasis(n_modes)
             prediction = spatial.reconstruct_coefficients(batch.noisy_data, basis)
-            summaries["spatial_cnn"] = summarise_errors(
-                prediction, batch.true_coefficients
-            )
+            summaries["spatial_cnn"] = summarise_errors(prediction, batch.true_coefficients)
 
         realised = float(np.mean(batch.realised_noise_level))
         for method, summary in summaries.items():
@@ -112,9 +110,7 @@ def evaluate_at_resolutions(
     return rows, curves
 
 
-def calibrated_delta(
-    prefactor: float, slope: float, target_error: float
-) -> float:
+def calibrated_delta(prefactor: float, slope: float, target_error: float) -> float:
     """Invert :math:`e = C\\delta^{\\text{slope}}` for :math:`\\delta`.
 
     Used only to report the table at the noise level implied by the paper's own number,
@@ -217,15 +213,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--delta", type=float, default=0.1, help="relative noise level (default: 0.1)"
     )
-    parser.add_argument(
-        "--skip-cnn", action="store_true", help="skip the spatial CNN control"
-    )
+    parser.add_argument("--skip-cnn", action="store_true", help="skip the spatial CNN control")
     args = apply_quick(parser.parse_args(argv))
 
     directory = output_dir(args.results_dir)
     figures = output_dir(directory / "figures")
 
-    suite = build_suite(n_modes=max(RESOLUTIONS))
+    suite = build_suite_from_args(args, n_modes=max(RESOLUTIONS))
     train_config = TrainConfig(
         n_train=args.n_train,
         n_val=args.n_test,
@@ -286,7 +280,10 @@ def main(argv: list[str] | None = None) -> int:
     payload: dict[str, Any] = {
         "experiment": "zero_shot_resolution_transfer",
         "paper_section": "5.4",
-        "environment": environment_info(),
+        "environment": environment_info(
+            getattr(args, "spectrum", None),
+            operator_id=getattr(args, "operator_id", None),
+        ),
         "paper_reference": PAPER_REFERENCE,
         "resolutions": list(RESOLUTIONS),
         "trained_resolution": TRAIN_RESOLUTION,
@@ -303,12 +300,8 @@ def main(argv: list[str] | None = None) -> int:
         },
     }
     full = curves["scnet_full_aperture"]
-    payload["summary"]["scnet_full_aperture_error_at_train_resolution"] = full[
-        TRAIN_RESOLUTION
-    ]
-    payload["summary"]["scnet_full_aperture_error_at_finest_resolution"] = full[
-        max(RESOLUTIONS)
-    ]
+    payload["summary"]["scnet_full_aperture_error_at_train_resolution"] = full[TRAIN_RESOLUTION]
+    payload["summary"]["scnet_full_aperture_error_at_finest_resolution"] = full[max(RESOLUTIONS)]
     payload["summary"]["scnet_full_aperture_drift"] = (
         abs(full[max(RESOLUTIONS)] - full[TRAIN_RESOLUTION]) / full[TRAIN_RESOLUTION]
     )
@@ -327,7 +320,7 @@ def main(argv: list[str] | None = None) -> int:
 
     print(
         f"\nSC-Net: {base:.4f} at N={TRAIN_RESOLUTION} -> {finest:.4f} at "
-        f"N={max(RESOLUTIONS)} (drift {100*abs(finest-base)/base:.1f}%); "
+        f"N={max(RESOLUTIONS)} (drift {100 * abs(finest - base) / base:.1f}%); "
         f"paper: 0.2415 -> 0.2292"
     )
     return 0

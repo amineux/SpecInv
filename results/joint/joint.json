@@ -1,0 +1,191 @@
+{
+  "created_at": "2026-09-09T17:30:30.918051+00:00",
+  "schema": "kerop.filter_contract/v1",
+  "contract_stem": "/workspace/fixtures/filter_contract_v1",
+  "producer": "kerop",
+  "producer_version": "0.1.0",
+  "specinv_operator_id": "kerop.spectral",
+  "quick": false,
+  "graded": true,
+  "joint_status": "fail",
+  "joint_pass": false,
+  "stamp": "JOINT FAIL -- handshake wiring, not a joint win",
+  "kerop": {
+    "status": "pass",
+    "pass": true,
+    "graded": true,
+    "quick": false,
+    "published_spectral_quick_median_x": 27.717,
+    "live_spectral_median_x": 7.045880839860094,
+    "rf_faster_at_every_target": true,
+    "operator_id": "kerop.spectral",
+    "n_modes": 3072,
+    "n_samples": 150,
+    "recorded_bar_median": 27.71727018410563,
+    "verdict": {
+      "baseline_risk_zero_predictor": 0.27980945397832113,
+      "n_targets_with_both_methods": 5,
+      "median_speedup_at_matched_risk": 7.045880839860094,
+      "min_speedup_at_matched_risk": 6.816295926021454,
+      "max_speedup_at_matched_risk": 30.709050924514152,
+      "median_speedup_exact_solve_only": 1.6279576800816409,
+      "min_speedup_exact_solve_only": 1.5473286036360965,
+      "random_features_faster_at_every_target": true,
+      "random_features_faster_at_every_target_solve_only": true
+    },
+    "reproduce": {
+      "task": "spectral",
+      "seed": 20260301,
+      "verbose": true,
+      "train_sizes": [
+        150,
+        300,
+        600
+      ],
+      "lambda_grid": [
+        0.03,
+        0.01,
+        0.003,
+        0.001,
+        0.0003,
+        0.0001,
+        3e-05
+      ],
+      "feature_multipliers": [
+        0.5,
+        1.0,
+        2.0
+      ],
+      "iteration_grid": [
+        64,
+        256
+      ],
+      "task_kwargs": {
+        "n_modes": 512,
+        "n_test": 1000
+      }
+    },
+    "note": "Live median is this run's number. The published spectral-quick median is 27.717x -- do not re-claim that figure if the live number is lower. kerop.dirichlet1d is 1-D Dirichlet wall-time, not FEM."
+  },
+  "specinv": {
+    "status": "fail",
+    "pass": false,
+    "graded": true,
+    "quick": false,
+    "n_pass": 8,
+    "n_total": 11,
+    "required_pass": 11,
+    "required_total": 11,
+    "operator_id": "kerop.spectral",
+    "n_modes": 3072,
+    "smoothness": 1.5,
+    "ill_posedness": 2.0,
+    "suite_dir": "/workspace/results/joint/specinv_suite",
+    "criteria": [
+      {
+        "id": "convergence_order_paper_grid",
+        "pass": false,
+        "detail": "|slope - 0.4286| <= 0.05",
+        "measured": 0.5515444009063885
+      },
+      {
+        "id": "convergence_order_asymptotic",
+        "pass": false,
+        "detail": "|slope - 0.4286| <= 0.02",
+        "measured": 0.44935637153359964
+      },
+      {
+        "id": "zero_shot_error_magnitude",
+        "pass": true,
+        "detail": "|e - 0.2292| / 0.2292 <= 0.15",
+        "measured": 0.2077499365101845
+      },
+      {
+        "id": "zero_shot_stability",
+        "pass": true,
+        "detail": "drift <= 0.05",
+        "measured": 1.0643359656226393e-06
+      },
+      {
+        "id": "zero_shot_stability_full_aperture",
+        "pass": false,
+        "detail": "drift <= 0.15",
+        "measured": 0.6878209107581994
+      },
+      {
+        "id": "beats_oracle_tikhonov",
+        "pass": true,
+        "detail": "all(scnet < oracle_tikhonov)",
+        "measured": true
+      },
+      {
+        "id": "beats_oracle_tikhonov_margin",
+        "pass": true,
+        "detail": "margin > 0",
+        "measured": 0.09002815205290447
+      },
+      {
+        "id": "filter_is_interpretable",
+        "pass": true,
+        "detail": "True",
+        "measured": true
+      },
+      {
+        "id": "filter_preserves_low_modes",
+        "pass": true,
+        "detail": "True",
+        "measured": true
+      },
+      {
+        "id": "filter_suppresses_high_modes",
+        "pass": true,
+        "detail": "True",
+        "measured": true
+      },
+      {
+        "id": "filter_sharper_than_tikhonov",
+        "pass": true,
+        "detail": "True",
+        "measured": true
+      }
+    ]
+  },
+  "environment": {
+    "specinv_version": "0.1.0",
+    "python": "3.12.3",
+    "platform": "Linux-6.12.94+-x86_64-with-glibc2.39",
+    "numpy": "2.4.4",
+    "torch": "2.14.0+cpu",
+    "paper": "arXiv:2603.20602",
+    "kerop_filter_contract": {
+      "schema": "kerop.filter_contract/v1",
+      "stem": "/workspace/fixtures/filter_contract_v1",
+      "producer": "kerop",
+      "producer_version": "0.1.0",
+      "operator": {
+        "schema": "kerop.filter_contract/v1",
+        "operator_id": "kerop.spectral",
+        "seed": 20260301,
+        "n": 150,
+        "n_modes": 3072,
+        "feature_count": 12,
+        "ill_posedness": 2.0,
+        "r": 0.5,
+        "b": 0.5,
+        "output_dim": 6,
+        "n_summands": 1,
+        "fingerprint": "3ed489ed0fffb5d9",
+        "note": null,
+        "kind": "kernel_integral_operator",
+        "walltime_task": "spectral"
+      }
+    }
+  },
+  "notes": [
+    "Graded path loads kerop.filter_contract/v1 written by KerOp.",
+    "SpecInv does not mint kerop.specinv.spectrum/v1 as the joint artifact.",
+    "kerop.dirichlet1d is 1-D Dirichlet wall-time (not FEM).",
+    "KerOp published spectral-quick median 27.717x is not re-claimed; live median is kerop.live_spectral_median_x.",
+    "JOINT FAIL -- handshake wiring, not a joint win."
+  ]
+}

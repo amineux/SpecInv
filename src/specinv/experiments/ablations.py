@@ -43,7 +43,7 @@ from ..training import TrainConfig
 from ._common import (
     add_common_arguments,
     apply_quick,
-    build_suite,
+    build_suite_from_args,
     environment_info,
     evaluate_full_aperture,
     evaluate_methods,
@@ -86,7 +86,7 @@ def main(argv: list[str] | None = None) -> int:
 
     for name, (net_config, overrides, amplitude) in variants().items():
         print(f"\n[ablation] {name}")
-        suite = build_suite(n_modes=TRANSFER_RESOLUTION, amplitude=amplitude)
+        suite = build_suite_from_args(args, n_modes=TRANSFER_RESOLUTION, amplitude=amplitude)
         train_config = TrainConfig(
             n_train=args.n_train,
             n_val=args.n_test,
@@ -107,13 +107,9 @@ def main(argv: list[str] | None = None) -> int:
                     model, suite, batch, methods=["scnet", "oracle_tikhonov", "prior_wiener"]
                 )
                 summaries = outputs.summarise(batch.true_coefficients)
-                summaries["scnet_full_aperture"] = evaluate_full_aperture(
-                    model, suite, batch
-                )
+                summaries["scnet_full_aperture"] = evaluate_full_aperture(model, suite, batch)
                 key = f"delta={delta:g},N={resolution}"
-                entry["errors"][key] = {
-                    m: s.mean_relative for m, s in summaries.items()
-                }
+                entry["errors"][key] = {m: s.mean_relative for m, s in summaries.items()}
                 rows.append(
                     {
                         "variant": name,
@@ -136,16 +132,17 @@ def main(argv: list[str] | None = None) -> int:
         # The extrapolation guard only bites when the aperture is widened, so the drift
         # that discriminates between variants is the full-aperture one.
         base_full = entry["errors"][f"delta=0.1,N={TRAIN_RESOLUTION}"]["scnet_full_aperture"]
-        fine_full = entry["errors"][f"delta=0.1,N={TRANSFER_RESOLUTION}"][
-            "scnet_full_aperture"
-        ]
+        fine_full = entry["errors"][f"delta=0.1,N={TRANSFER_RESOLUTION}"]["scnet_full_aperture"]
         entry["zero_shot_drift_full_aperture"] = abs(fine_full - base_full) / base_full
         results[name] = entry
 
     payload = {
         "experiment": "ablations",
         "paper_section": "n/a (implementation study)",
-        "environment": environment_info(),
+        "environment": environment_info(
+            getattr(args, "spectrum", None),
+            operator_id=getattr(args, "operator_id", None),
+        ),
         "train_resolution": TRAIN_RESOLUTION,
         "transfer_resolution": TRANSFER_RESOLUTION,
         "eval_deltas": list(EVAL_DELTAS),
@@ -158,8 +155,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  {'variant':<22s} {'trained aperture':>17s} {'full aperture':>15s}")
     for name, entry in results.items():
         print(
-            f"  {name:<22s} {100*entry['zero_shot_drift']:16.2f}% "
-            f"{100*entry['zero_shot_drift_full_aperture']:14.2f}%"
+            f"  {name:<22s} {100 * entry['zero_shot_drift']:16.2f}% "
+            f"{100 * entry['zero_shot_drift_full_aperture']:14.2f}%"
         )
     return 0
 

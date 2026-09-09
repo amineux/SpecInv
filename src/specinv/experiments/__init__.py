@@ -11,9 +11,10 @@ Module                 Paper section       Output
 :mod:`zero_shot`       §5.4, Figure 3      ``zero_shot.json`` / ``.csv``
 :mod:`ablations`       --                  ``ablations.json`` / ``.csv``
 :mod:`run_all`         all                 ``summary.json`` with pass/fail criteria
+:mod:`joint`           KerOp path          ``joint.json`` — both bars, red/green
 =====================  ==================  =============================================
 """
 
 from __future__ import annotations
 
-__all__ = ["ablations", "convergence", "filters", "run_all", "zero_shot"]
+__all__ = ["ablations", "convergence", "filters", "joint", "run_all", "zero_shot"]

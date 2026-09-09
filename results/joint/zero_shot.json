@@ -1,0 +1,156 @@
+{
+  "experiment": "zero_shot_resolution_transfer",
+  "paper_section": "5.4",
+  "environment": {
+    "specinv_version": "0.1.0",
+    "python": "3.12.3",
+    "platform": "Linux-6.12.94+-x86_64-with-glibc2.39",
+    "numpy": "2.4.4",
+    "torch": "2.14.0+cpu",
+    "paper": "arXiv:2603.20602",
+    "kerop_filter_contract": {
+      "schema": "kerop.filter_contract/v1",
+      "stem": "/workspace/fixtures/filter_contract_v1",
+      "producer": "kerop",
+      "producer_version": "0.1.0",
+      "operator": {
+        "schema": "kerop.filter_contract/v1",
+        "operator_id": "kerop.spectral",
+        "seed": 20260301,
+        "n": 150,
+        "n_modes": 3072,
+        "feature_count": 12,
+        "ill_posedness": 2.0,
+        "r": 0.5,
+        "b": 0.5,
+        "output_dim": 6,
+        "n_summands": 1,
+        "fingerprint": "3ed489ed0fffb5d9",
+        "note": null,
+        "kind": "kernel_integral_operator",
+        "walltime_task": "spectral"
+      }
+    }
+  },
+  "paper_reference": {
+    "scnet_rate_slope": 0.5,
+    "oracle_tikhonov_rate_slope": 0.42,
+    "theoretical_rate_s_p_1p5": 0.5,
+    "zero_shot_error_n256": 0.2415,
+    "zero_shot_error_n2048": 0.2292,
+    "train_resolution": 256,
+    "test_resolutions": [
+      512,
+      1024,
+      2048
+    ],
+    "n_train": 2000,
+    "n_test": 500
+  },
+  "resolutions": [
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "trained_resolution": 256,
+  "training": {
+    "n_parameters": 8833,
+    "lipschitz_bound": 8.852172964726467,
+    "epochs": 300,
+    "n_train": 2000,
+    "train_resolution": 256,
+    "delta_range": [
+      0.001,
+      0.1
+    ],
+    "gamma": 0.0,
+    "final_val_relative_l2": 0.07510097324848175,
+    "best_val_relative_l2": 0.07503286749124527,
+    "wall_time_seconds": 44.85939265699926,
+    "feature_names": [
+      "log_sigma",
+      "log_coeff",
+      "log_naive",
+      "log_amplitude",
+      "log_noise",
+      "log_snr"
+    ],
+    "noise_band": [
+      32,
+      64
+    ]
+  },
+  "spatial_cnn_training": {
+    "n_parameters": 83665,
+    "best_val_relative_l2": 0.10353764146566391,
+    "wall_time_seconds": 208.79739184600112
+  },
+  "primary": {
+    "delta": 0.1,
+    "curves": {
+      "scnet": {
+        "256": 0.20774971539469056,
+        "512": 0.2077499091500212,
+        "1024": 0.20774993345605108,
+        "2048": 0.2077499365101845
+      },
+      "oracle_tikhonov": {
+        "256": 0.24618258389126424,
+        "512": 0.24618278769687912,
+        "1024": 0.24618281132625783,
+        "2048": 0.24618281415894888
+      },
+      "oracle_tsvd": {
+        "256": 0.1946824209430171,
+        "512": 0.19468262748610735,
+        "1024": 0.19468265339584032,
+        "2048": 0.19468265665081597
+      },
+      "tikhonov_discrepancy": {
+        "256": 0.2780685208639318,
+        "512": 0.2803420716812806,
+        "1024": 0.28268951657634395,
+        "2048": 0.28510086896550957
+      },
+      "prior_wiener": {
+        "256": 0.20491764208560195,
+        "512": 0.20491784030502008,
+        "1024": 0.2049178651933509,
+        "2048": 0.20491786831849546
+      },
+      "oracle_spectral_bound": {
+        "256": 0.119689597841232,
+        "512": 0.11968979487529682,
+        "1024": 0.11968981976143232,
+        "2048": 0.11968982287984968
+      },
+      "scnet_full_aperture": {
+        "256": 0.20774971539469056,
+        "512": 0.20857227641408896,
+        "1024": 0.22061774937533404,
+        "2048": 0.35064431384722333
+      },
+      "spatial_cnn": {
+        "256": 0.2750441695347448,
+        "512": 0.40863723406961655,
+        "1024": 0.47236589149024655,
+        "2048": 0.49288117153134503
+      }
+    }
+  },
+  "matched_to_paper": null,
+  "summary": {
+    "scnet_error_at_train_resolution": 0.20774971539469056,
+    "scnet_error_at_finest_resolution": 0.2077499365101845,
+    "relative_drift_train_to_finest": 1.0643359656226393e-06,
+    "paper_error_n256": 0.2415,
+    "paper_error_n2048": 0.2292,
+    "scnet_full_aperture_error_at_train_resolution": 0.20774971539469056,
+    "scnet_full_aperture_error_at_finest_resolution": 0.35064431384722333,
+    "scnet_full_aperture_drift": 0.6878209107581994,
+    "spatial_cnn_error_at_train_resolution": 0.2750441695347448,
+    "spatial_cnn_error_at_finest_resolution": 0.49288117153134503,
+    "spatial_cnn_degradation_factor": 1.7920073432753938
+  }
+}

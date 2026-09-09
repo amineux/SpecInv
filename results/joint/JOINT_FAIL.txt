@@ -1,0 +1,13 @@
+JOINT FAIL
+
+This is handshake wiring plus an honest fail. It is not a joint win.
+
+schema:           kerop.filter_contract/v1
+producer:         kerop 0.1.0
+SpecInv target:   kerop.spectral
+SpecInv bar:      8/11
+KerOp live median: 7.046x
+KerOp published:  27.717x (context only; not re-claimed)
+
+kerop.dirichlet1d is 1-D Dirichlet wall-time (12 points), not FEM.
+Do not treat this directory as JOINT PASS.

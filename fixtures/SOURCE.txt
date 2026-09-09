@@ -1,0 +1,5 @@
+filter_contract_v1.{json,npz} is a last-resort copy of KerOp main's
+committed fixtures/filter_contract_v1 (schema kerop.filter_contract/v1).
+Prefer a sibling KerOp checkout / --kerop-root / KEROP_ROOT.
+Do not regenerate these files from SpecInv. Re-copy from KerOp if the export changes.
+Operator ids: kerop.spectral, kerop.dirichlet1d (not FEM).

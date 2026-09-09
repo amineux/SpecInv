@@ -1,0 +1,160 @@
+{
+  "schema": "kerop.filter_contract/v1",
+  "contract_version": 1,
+  "producer": "kerop",
+  "producer_version": "0.1.0",
+  "consumer": "specinv",
+  "description": "Canonical KerOp \u2192 SpecInv handshake. Schema id is kerop.filter_contract/v1 only; do not mint a second schema. Load the sibling .npz for the arrays named under operators[].arrays. See docs/FILTER_CONTRACT.md.",
+  "recorded_bar": {
+    "protocol": "quick wall-time vs exact operator-valued KRR at matched excess risk (scripts/run_walltime_benchmark.py --quick)",
+    "spectral_median_speedup_at_matched_risk": 27.71727018410563,
+    "dirichlet1d_median_speedup_at_matched_risk": 3.55604718390518
+  },
+  "operators": [
+    {
+      "kind": "kernel_integral_operator",
+      "description": "Eigenvalues of the synthetic kernel integral operator L (product set mu_j * nu_k) used by the spectral wall-time bar.",
+      "r": 0.5,
+      "b": 0.5,
+      "n_modes": 512,
+      "output_dim": 6,
+      "n_summands": 1,
+      "input_dim": 1,
+      "feature_multiplier": 1.0,
+      "reproduce": {
+        "task_kwargs": {
+          "n_modes": 512,
+          "n_test": 1000
+        },
+        "lambda_grid": [
+          0.03,
+          0.01,
+          0.003,
+          0.001,
+          0.0003,
+          0.0001,
+          3e-05
+        ],
+        "output_dim": 6,
+        "n_summands": 1,
+        "r": 0.5,
+        "b": 0.5,
+        "seed": 20260301,
+        "n": 150,
+        "n_features": 12,
+        "cli": "python scripts/run_walltime_benchmark.py --quick --task spectral",
+        "script": "scripts/run_walltime_benchmark.py",
+        "train_sizes": [
+          150,
+          300,
+          600
+        ],
+        "feature_multipliers": [
+          0.5,
+          1.0,
+          2.0
+        ],
+        "iteration_grid": [
+          64,
+          256
+        ]
+      },
+      "recorded_bar": {
+        "results_file": "results/walltime_spectral.json",
+        "median_speedup_at_matched_risk": 27.71727018410563,
+        "min_speedup_at_matched_risk": 24.668054198508425,
+        "max_speedup_at_matched_risk": 126.04174549573541
+      },
+      "operator_id": "kerop.spectral",
+      "seed": 20260301,
+      "n": 150,
+      "n_features": 12,
+      "feature_count": 12,
+      "coefficient_dim": 12,
+      "arrays": {
+        "eigenvalues": "spectral/eigenvalues",
+        "rf_spectrum": "spectral/rf_spectrum"
+      },
+      "eigenvalues_shape": [
+        3072
+      ],
+      "rf_spectrum_shape": [
+        12
+      ],
+      "ordering": "descending",
+      "spectrum_units": "absolute"
+    },
+    {
+      "kind": "dirichlet1d_solution_operator",
+      "is_fem": false,
+      "description": "Eigenvalues (k*pi)^{-2} of the existing 1D Dirichlet map (-u''=f on [0,1]) used by the wall-time bar. Closed form in the sine basis; not a FEM / Poisson-stiffness attachment.",
+      "n_points": 12,
+      "n_modes": 12,
+      "output_dim": 12,
+      "n_summands": 9,
+      "feature_dim": 8,
+      "noise_std": 0.02,
+      "feature_multiplier": 1.0,
+      "reproduce": {
+        "task_kwargs": {
+          "n_points": 12
+        },
+        "lambda_grid": [
+          0.01,
+          0.0001,
+          1e-05,
+          1e-06,
+          1e-07
+        ],
+        "output_dim": 12,
+        "n_summands": 9,
+        "noise_std": 0.02,
+        "walltime_task": "poisson",
+        "seed": 20260301,
+        "n": 150,
+        "n_features": 110,
+        "cli": "python scripts/run_walltime_benchmark.py --quick --task poisson",
+        "script": "scripts/run_walltime_benchmark.py",
+        "train_sizes": [
+          150,
+          300,
+          600
+        ],
+        "feature_multipliers": [
+          0.5,
+          1.0,
+          2.0
+        ],
+        "iteration_grid": [
+          64,
+          256
+        ]
+      },
+      "recorded_bar": {
+        "results_file": "results/walltime_poisson.json",
+        "median_speedup_at_matched_risk": 3.55604718390518,
+        "min_speedup_at_matched_risk": 1.594794749678986,
+        "max_speedup_at_matched_risk": 44.17186286847536,
+        "note": "The experiment script still uses --task poisson; that is the 1D Dirichlet map, not a FEM attachment."
+      },
+      "operator_id": "kerop.dirichlet1d",
+      "seed": 20260301,
+      "n": 150,
+      "n_features": 110,
+      "feature_count": 110,
+      "coefficient_dim": 990,
+      "arrays": {
+        "eigenvalues": "dirichlet1d/eigenvalues",
+        "rf_spectrum": "dirichlet1d/rf_spectrum"
+      },
+      "eigenvalues_shape": [
+        12
+      ],
+      "rf_spectrum_shape": [
+        990
+      ],
+      "ordering": "descending",
+      "spectrum_units": "absolute"
+    }
+  ]
+}
